@@ -6,7 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Protocol", "Portf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Client", "Portfolio.Client\Portfolio.Client.csproj", "{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Net", "Portfolio.Net\Portfolio.Net.csproj", "{5128A3B9-09F8-485E-A123-25024F759A24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Gameplay", "Portfolio.Gameplay\Portfolio.Gameplay.csproj", "{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "Portfolio.Entities\Portfolio.Entities.csproj", "{7C84AFED-C130-4597-8C46-DC959C40B9F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +28,13 @@ Global
 		{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5128A3B9-09F8-485E-A123-25024F759A24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5128A3B9-09F8-485E-A123-25024F759A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5128A3B9-09F8-485E-A123-25024F759A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5128A3B9-09F8-485E-A123-25024F759A24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

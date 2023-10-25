@@ -2,26 +2,21 @@ using System.Net;
 using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using Portfolio.Net;
 using Portfolio.Protocol;
-using Portfolio.Protocol.Packets;
 
 namespace Portfolio.Client
 {
-    public class ClientNetworkingService : INetEventListener
+    public class NetworkingService : INetEventListener
     {
-        private readonly Dictionary<ulong, Action<IPacketReader>> _packetHandlers = new();
+        private readonly Dictionary<ulong, Action<NetDataReader>> _packetHandlers = new();
         private readonly NetManager _manager;
-
-        private readonly LiteNetLibPacketReader _packetReader = new();
-        private readonly LiteNetLibPacketWriter _packetWriter = new(new NetDataWriter());
+        private readonly NetDataWriter _packetWriter = new();
 
         private NetPeer? _peer;
 
-        public ClientNetworkingService()
+        public NetworkingService()
         {
             _manager = new NetManager(this);
-            _manager.UseNativeSockets = true;
             _manager.AutoRecycle = true;
         }
 
@@ -41,33 +36,33 @@ namespace Portfolio.Client
             _manager.Stop();
         }
 
-        public void RegisterPacketHandler<T>(Action<T> handler) where T : IPacket, new()
+        public void RegisterMessageHandler<T>(Action<T> handler) where T : IMessage, new()
         {
             var packet = new T();
 
-            _packetHandlers[Packet.GetId<T>()] = reader =>
+            _packetHandlers[PacketHash.Get<T>()] = reader =>
             {
-                Console.WriteLine($"Processing Packet: {typeof(T)}");
+                Console.WriteLine($"Processing Packet: {typeof(T).Name}");
 
                 packet.Deserialize(reader);
+
                 handler.Invoke(packet);
             };
         }
 
-        public void Send<T>(T message) where T : class, IPacket
+        public void Send<T>(T message) where T : ICommand
         {
             if (_peer == null)
             {
-                Console.WriteLine("Connecting...");
                 return;
             }
 
             _packetWriter.Reset();
-            _packetWriter.WriteULong(Packet.GetId<T>());
+            _packetWriter.Put(PacketHash.Get<T>());
 
             message.Serialize(_packetWriter);
 
-            _peer.Send(_packetWriter.Data(), DeliveryMethod.ReliableOrdered);
+            _peer.Send(_packetWriter, DeliveryMethod.ReliableOrdered);
         }
 
         public void OnPeerConnected(NetPeer peer)
@@ -93,8 +88,14 @@ namespace Portfolio.Client
         {
             Console.WriteLine("OnNetworkReceive");
 
-            _packetReader.Reader = reader;
-            _packetHandlers[_packetReader.ReadULong()].Invoke(_packetReader);
+            if (_packetHandlers.TryGetValue(reader.GetULong(), out var handler))
+            {
+                handler.Invoke(reader);
+            }
+            else
+            {
+                Console.WriteLine("OnNetworkReceive: no packet handler");
+            }
         }
 
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)

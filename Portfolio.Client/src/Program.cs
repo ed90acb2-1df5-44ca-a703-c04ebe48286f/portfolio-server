@@ -1,9 +1,10 @@
 ﻿using Portfolio.Client;
-using Portfolio.Protocol.Packets;
+using Portfolio.Protocol.Commands;
+using Portfolio.Protocol.Messages;
 
-var client = new ClientNetworkingService();
+var client = new NetworkingService();
 
-client.RegisterPacketHandler<LoginResponse>(packet =>
+client.RegisterMessageHandler<LoginMessage>(packet =>
 {
     Console.WriteLine($"Packet Data: {packet.Token}");
 });
@@ -14,7 +15,7 @@ while (true)
 {
     client.Update();
 
-    await Task.Delay(1000);
+    await Task.Delay(1);
 
-    client.Send(new LoginRequest() {Login = "user@mail.com", Password = "password"});
+    client.Send(new LoginCommand() {Login = "user@mail.com", Password = "password"});
 }

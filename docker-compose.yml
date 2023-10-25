@@ -1,23 +1,25 @@
 version: "3"
 
 volumes:
-  portfolio_database_volume:
+  database_volume:
 
 services:
-  postfolio_server:
+  database:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - database_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: database_user
+      POSTGRES_PASSWORD: database_password
+      POSTGRES_DB: portfolio
+
+  server:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "1447:1447/udp"
-
-  portfolio_database:
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    volumes:
-      - portfolio_database_volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: database_user
-      POSTGRES_PASSWORD: database_password
-      POSTGRES_DB: portfolio
+      WAIT_HOSTS: database:5432

@@ -2,39 +2,40 @@ using System.Net;
 using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Portfolio.Net;
 using Portfolio.Protocol;
-using Portfolio.Protocol.Packets;
+using Portfolio.Server.Handlers;
 
 namespace Portfolio.Server
 {
-    public class ServerNetworkingService : INetEventListener
+    public class NetworkingService : INetEventListener
     {
         private readonly Dictionary<int, NetPeer> _peers = new();
-        private readonly Dictionary<ulong, Action<IPacketReader>> _packetHandlers = new();
-        private readonly ILogger<ServerNetworkingService> _logger;
+        private readonly Dictionary<ulong, Action<int, NetDataReader>> _packetHandlers = new();
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<NetworkingService> _logger;
         private readonly IOptions<ServerSettings> _options;
         private readonly NetManager _manager;
+        private readonly NetDataWriter _packetWriter = new();
 
-        private readonly LiteNetLibPacketReader _packetReader = new();
-        private readonly LiteNetLibPacketWriter _packetWriter = new(new NetDataWriter());
-
-        public ServerNetworkingService(ILogger<ServerNetworkingService> logger, IOptions<ServerSettings> options)
+        public NetworkingService(IServiceProvider serviceProvider, ILogger<NetworkingService> logger, IOptions<ServerSettings> options)
         {
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _options = options;
+
             _manager = new NetManager(this);
-            _manager.UseNativeSockets = true;
+            _manager.UseNativeSockets = options.Value.UseNativeSockets;
             _manager.AutoRecycle = true;
         }
 
         public void Start()
         {
             _manager.Start(_options.Value.Port);
+
             _logger.LogInformation($"Server started at port: {_manager.LocalPort}");
-            _logger.LogInformation(_options.Value.Secret);
         }
 
         public void Update()
@@ -47,37 +48,56 @@ namespace Portfolio.Server
             _manager.Stop();
         }
 
-        public void RegisterPacketHandler<T>(Action<T> handler) where T : IPacket, new()
+        public void RegisterCommandHandler<TCommand, THandler>() where TCommand : struct, ICommand where THandler : IHandler<TCommand>
         {
-            var packet = new T();
+            var command = new TCommand();
 
-            _packetHandlers[Packet.GetId<T>()] = reader =>
+            _packetHandlers[PacketHash.Get<TCommand>()] = async (peerId, reader) =>
             {
-                _logger.LogDebug($"Processing Packet: {typeof(T)}");
-                packet.Deserialize(reader);
-                handler.Invoke(packet);
+                command.Deserialize(reader);
+
+                using var scope = _serviceProvider.CreateScope();
+                await scope.ServiceProvider.GetRequiredService<THandler>().Handle(peerId, command);
             };
         }
 
-        public void Send<T>(T message, int peerId, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where T : class, IPacket
+        public void Kick(int peerId)
         {
-            _packetWriter.Reset();
-            _packetWriter.WriteULong(Packet.GetId<T>());
+            if (_peers.ContainsKey(peerId) == false)
+            {
+                return;
+            }
 
-            message.Serialize(_packetWriter);
-
-            _peers[peerId].Send(_packetWriter.Writer, deliveryMethod);
+            _peers[peerId].Disconnect();
         }
 
-        public void Broadcast<T>(T message, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where T : class, IPacket
+        public void Send<TMessage>(int peerId, TMessage message, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where TMessage : class, IMessage
         {
-            foreach (var peer in _peers.Values)
+            if (_peers.ContainsKey(peerId) == false)
             {
-                Send(message, peer.Id, deliveryMethod);
+                return;
+            }
+
+            lock (_packetWriter)
+            {
+                _packetWriter.Reset();
+                _packetWriter.Put(PacketHash.Get<TMessage>());
+
+                message.Serialize(_packetWriter);
+
+                _peers[peerId].Send(_packetWriter, deliveryMethod);
             }
         }
 
-        public void BroadcastExcept<T>(T message, int peerId, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where T : class, IPacket
+        public void Broadcast<TMessage>(TMessage message, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where TMessage : class, IMessage
+        {
+            foreach (var peer in _peers.Values)
+            {
+                Send(peer.Id, message, deliveryMethod);
+            }
+        }
+
+        public void BroadcastExcept<TMessage>(TMessage message, int peerId, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where TMessage : class, IMessage
         {
             foreach (var peer in _peers.Values)
             {
@@ -86,7 +106,7 @@ namespace Portfolio.Server
                     continue;
                 }
 
-                Send(message, peer.Id, deliveryMethod);
+                Send(peer.Id, message, deliveryMethod);
             }
         }
 
@@ -113,8 +133,14 @@ namespace Portfolio.Server
         {
             _logger.LogDebug("OnNetworkReceive");
 
-            _packetReader.Reader = reader;
-            _packetHandlers[_packetReader.ReadULong()].Invoke(_packetReader);
+            if (_packetHandlers.TryGetValue(reader.GetULong(), out var handler))
+            {
+                handler.Invoke(peer.Id, reader);
+            }
+            else
+            {
+                _logger.LogDebug("OnNetworkReceive: no packet handler");
+            }
         }
 
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)

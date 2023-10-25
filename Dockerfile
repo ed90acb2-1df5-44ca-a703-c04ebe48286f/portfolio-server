@@ -16,4 +16,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 EXPOSE 1447
-ENTRYPOINT ["dotnet", "Portfolio.Server.dll"]
+
+COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
+
+ENV WAIT_COMMAND="dotnet Portfolio.Server.dll"
+
+ENTRYPOINT ["/wait"]

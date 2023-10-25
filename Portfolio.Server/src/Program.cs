@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Portfolio.Server;
-using Serilog;
+using Portfolio.Server.Extensions;
+using Portfolio.Server.Services;
 
 await Host.CreateDefaultBuilder(args)
     .ConfigureHostOptions(options =>
@@ -11,14 +12,18 @@ await Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(context.Configuration)
-            .CreateLogger();
-
-        services.AddHostedService<GameLoop>();
-        services.AddSingleton<ServerNetworkingService>();
-        services.Configure<ServerSettings>(context.Configuration.GetSection("Server"));
+        services
+            .AddHostedService<GameService>()
+            .AddSingleton<NetworkingService>()
+            .AddScoped<AuthenticationService>()
+            .AddScoped<SessionService>()
+            .AddCommandHandlers()
+            .AddOptions(context)
+            .AddRepositories(context)
+            .AddMigrations(context)
+            .AddSerilog(context);
     })
-    .UseSerilog()
     .Build()
+    .RunMigrations()
+    .RegisterCommandHandlers()
     .RunAsync();
