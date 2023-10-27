@@ -3,10 +3,19 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <LangVersion>9</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LiteNetLib" Version="1.1.0"/>
+        <PackageReference Include="Google.Protobuf" Version="3.25.0-rc2" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <ProtoOutput>$(MSBuildProjectDirectory)/src/Generated</ProtoOutput>
+        <ProtoSource>$(MSBuildProjectDirectory)/src/Proto</ProtoSource>
+    </PropertyGroup>
+
+    <Target Name="ProtobufCompile" BeforeTargets="BeforeBuild">
+        <Exec Command="protoc --csharp_out=$(ProtoOutput) --proto_path=$(ProtoSource) $(ProtoSource)/*.proto" />
+    </Target>
 </Project>

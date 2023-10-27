@@ -2,7 +2,7 @@ namespace Portfolio.Protocol
 {
     public static class PacketHash
     {
-        public static ulong Get<T>() where T : IPacket
+        public static ulong Get<T>()
         {
             return HashCache<T>.Value;
         }

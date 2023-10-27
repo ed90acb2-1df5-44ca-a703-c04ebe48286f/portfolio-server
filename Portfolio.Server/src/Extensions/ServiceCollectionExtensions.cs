@@ -3,7 +3,6 @@ using System.Reflection;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Portfolio.Server.Handlers;
 using Portfolio.Server.Repositories;
@@ -18,7 +17,7 @@ public static class ServiceCollectionExtensions
     {
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            if (type is {IsClass: true, IsAbstract: false} && type.GetInterfaces().Any(x => x == typeof(IHandler)))
+            if (type is {IsClass: true, IsAbstract: false} && type.GetInterfaces().Any(x => x == typeof(ICommandHandler)))
             {
                 services.AddScoped(type);
             }
@@ -27,39 +26,42 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddOptions(this IServiceCollection services, HostBuilderContext context)
+    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ServerSettings>(context.Configuration.GetSection("Server"));
+        services.Configure<ServerSettings>(configuration.GetSection("Server"));
 
         return services;
     }
 
-    public static IServiceCollection AddMigrations(this IServiceCollection services, HostBuilderContext context)
+    public static IServiceCollection AddMigrations(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddFluentMigratorCore()
             .ConfigureRunner(builder => builder
                 .AddPostgres()
-                .WithGlobalConnectionString(context.Configuration.GetConnectionString("Postgres"))
-                .ScanIn(typeof(Program).Assembly).For.Migrations())
-            .AddLogging(lb => lb.AddFluentMigratorConsole());
+                .WithGlobalConnectionString(configuration.GetConnectionString("Postgres"))
+                .ScanIn(typeof(Program).Assembly).For.Migrations());
 
         return services;
     }
 
-    public static IServiceCollection AddSerilog(this IServiceCollection services, HostBuilderContext context)
+    public static IServiceCollection AddSerilog(this IServiceCollection services, IConfiguration configuration)
     {
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(context.Configuration)
-            .CreateLogger();
+        services.AddLogging(builder =>
+        {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
 
-        services.AddSerilog();
+            builder.AddSerilog();
+        });
 
         return services;
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services, HostBuilderContext context)
+    public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IDbConnection>(_ => new NpgsqlConnection(context.Configuration.GetConnectionString("Postgres")));
+        var connectionString = configuration.GetConnectionString("Postgres");
+        services.AddScoped<IDbConnection>(_ => new NpgsqlConnection(connectionString));
         services.AddScoped<IUserRepository, DapperUserRepository>();
 
         return services;

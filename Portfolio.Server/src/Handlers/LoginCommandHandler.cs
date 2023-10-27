@@ -5,18 +5,18 @@ using Portfolio.Server.Services;
 
 namespace Portfolio.Server.Handlers;
 
-public class LoginCommandHandler : IHandler<LoginCommand>
+public class LoginCommandHandler : ICommandHandler<LoginCommand>
 {
     private readonly ILogger<LoginCommandHandler> _logger;
     private readonly AuthenticationService _authenticationService;
     private readonly SessionService _sessionService;
-    private readonly NetworkingService _networkingService;
+    private readonly ServerNetworkingService _networkingService;
 
     public LoginCommandHandler(
         ILogger<LoginCommandHandler> logger,
         AuthenticationService authenticationService,
         SessionService sessionService,
-        NetworkingService networkingService)
+        ServerNetworkingService networkingService)
     {
         _logger = logger;
         _authenticationService = authenticationService;
@@ -33,7 +33,7 @@ public class LoginCommandHandler : IHandler<LoginCommand>
 
         if (user == null)
         {
-            _networkingService.Kick(peerId);
+            //_networkingService.Disconnect(peerId);
             return;
         }
 
