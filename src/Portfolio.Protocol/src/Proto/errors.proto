@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Portfolio.Protocol.Errors";
+
+enum ErrorMessageCode {
+    Undefined = 0;
+    RegistrationLoginExists = 1;
+    AuthenticationInvalidCredentials = 2;
+}
+
+message ErrorMessage {
+    ErrorMessageCode Code = 1;
+}

@@ -1,1 +1,1 @@
-dotnet run --project Portfolio.Server/Portfolio.Server.csproj
+dotnet run --project src/Portfolio.Server/Portfolio.Server.csproj

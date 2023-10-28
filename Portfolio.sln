@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Server", "Portfolio.Server\Portfolio.Server.csproj", "{9D836D06-58D8-467F-B334-702D6FC71A2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Server", "src\Portfolio.Server\Portfolio.Server.csproj", "{9D836D06-58D8-467F-B334-702D6FC71A2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Protocol", "Portfolio.Protocol\Portfolio.Protocol.csproj", "{A16245B4-2B0F-4490-9C1D-0A9CE30ACC3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Protocol", "src\Portfolio.Protocol\Portfolio.Protocol.csproj", "{A16245B4-2B0F-4490-9C1D-0A9CE30ACC3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Client", "Portfolio.Client\Portfolio.Client.csproj", "{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Client", "src\Portfolio.Client\Portfolio.Client.csproj", "{478378AD-F8AB-4D1B-AAB3-5E7712436BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Gameplay", "Portfolio.Gameplay\Portfolio.Gameplay.csproj", "{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Gameplay", "src\Portfolio.Gameplay\Portfolio.Gameplay.csproj", "{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "Portfolio.Entities\Portfolio.Entities.csproj", "{7C84AFED-C130-4597-8C46-DC959C40B9F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "src\Portfolio.Entities\Portfolio.Entities.csproj", "{7C84AFED-C130-4597-8C46-DC959C40B9F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

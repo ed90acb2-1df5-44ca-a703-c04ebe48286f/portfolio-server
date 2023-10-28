@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["Portfolio.Server/Portfolio.Server.csproj", "Portfolio.Server/"]
+COPY ["src/Portfolio.Server/Portfolio.Server.csproj", "Portfolio.Server/"]
 RUN dotnet restore "Portfolio.Server/Portfolio.Server.csproj"
 COPY . .
 WORKDIR "/src/Portfolio.Server"
