@@ -12,7 +12,7 @@ namespace Portfolio.Server.Net
 {
     public class NetworkDispatcher : INetEventListener
     {
-        private readonly Dictionary<ulong, Action<NetPeer, NetDataReader>> _handlers = new();
+        private readonly Dictionary<ulong, Func<NetPeer, NetDataReader, Task>> _handlers = new();
         private readonly Dictionary<Player, NetPeer> _peers = new();
         private readonly BufferWriter _buffer = new();
         private readonly NetManager _manager;
@@ -30,14 +30,15 @@ namespace Portfolio.Server.Net
             _manager.AutoRecycle = true;
         }
 
-        public void RegisterHandler<TPacket>(Action<Player, TPacket> handler) where TPacket : class, IMessage, new()
+        public void RegisterHandler<TPacket>(Func<Player, TPacket, Task> handler) where TPacket : class, IMessage, new()
         {
+            // This packet will be reused
             var packet = new TPacket();
 
-            _handlers[PacketHash.Get<TPacket>()] = (peer, reader) =>
+            _handlers[GetPacketHash<TPacket>()] = async (peer, reader) =>
             {
-                packet.MergeFrom(reader.GetRemainingBytes());
-                handler.Invoke((Player) peer.Tag, packet);
+                Hydrate(packet, reader.GetRemainingBytes());
+                await handler.Invoke((Player) peer.Tag, packet);
             };
         }
 
@@ -65,7 +66,7 @@ namespace Portfolio.Server.Net
             lock (_buffer)
             {
                 _buffer.Reset();
-                _buffer.Write(PacketHash.Get<TMessage>());
+                _buffer.Write(GetPacketHash<TMessage>());
 
                 message.WriteTo(_buffer);
 
@@ -117,7 +118,7 @@ namespace Portfolio.Server.Net
         {
             //_logger.LogDebug("OnNetworkReceive");
 
-            if (_handlers.TryGetValue(reader.GetULong(), out var handler))
+            if (_handlers.TryGetValue(ReadPacketHash(reader), out var handler))
             {
                 handler.Invoke(peer, reader);
             }
@@ -154,6 +155,21 @@ namespace Portfolio.Server.Net
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
         {
             _logger.LogDebug("OnNetworkReceiveUnconnected");
+        }
+
+        private static void Hydrate<TPacket>(TPacket packet, byte[] data) where TPacket : class, IMessage
+        {
+            packet.MergeFrom(data);
+        }
+
+        private static ulong GetPacketHash<TPacket>()
+        {
+            return PacketHash.Get<TPacket>();
+        }
+
+        private static ulong ReadPacketHash(NetDataReader reader)
+        {
+            return reader.GetULong();
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Portfolio.Protocol.Commands;
-using Portfolio.Server.CommandHandlers;
 using Portfolio.Server.Extensions;
 using Portfolio.Server.Net;
 using Portfolio.Server.Security;
@@ -32,7 +30,6 @@ public static class Program
             .AddSerilog(configuration)
             .BuildServiceProvider();
 
-        RegisterCommandHandlers(services);
         RunMigrations(services);
 
         services.GetRequiredService<Application>().Start();
@@ -43,36 +40,5 @@ public static class Program
         using var scope = services.CreateScope();
         var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
         runner.MigrateUp();
-    }
-
-    private static void RegisterCommandHandlers(IServiceProvider services)
-    {
-        var networking = services.GetRequiredService<NetworkDispatcher>();
-
-        networking.RegisterHandler(CreateCommandHandlerDelegate<LoginCommand, LoginCommandHandler>(false));
-
-        return;
-
-        Action<Player, TCommand> CreateCommandHandlerDelegate<TCommand, THandler>(bool isAuthenticationRequired = false) where THandler : ICommandHandler<TCommand>
-        {
-            return async (player, command) =>
-            {
-                try
-                {
-                    if (isAuthenticationRequired && !services.GetRequiredService<Authentication>().IsAuthenticated(player))
-                    {
-                        return;
-                    }
-
-                    await using var scope = services.CreateAsyncScope();
-                    await scope.ServiceProvider.GetRequiredService<THandler>().Handle(player, command);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception);
-                    throw;
-                }
-            };
-        }
     }
 }

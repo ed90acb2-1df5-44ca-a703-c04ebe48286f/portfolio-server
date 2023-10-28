@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -123,12 +122,7 @@ namespace Portfolio.Entities
         {
             ValidateEntity(entity);
 
-            var componentTypeIndex = GetComponentTypeIndex<T>();
-
-            // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-            _components[componentTypeIndex] ??= new T[_entities.Length];
-
-            var components = (T[]) _components[componentTypeIndex];
+            var components = Components<T>();
 
             if (!components.IndexInBounds(entity.Index))
             {
@@ -136,8 +130,8 @@ namespace Portfolio.Entities
             }
 
             components[entity.Index] = component;
-            _components[componentTypeIndex] = components;
 
+            var componentTypeIndex = GetComponentTypeIndex<T>();
             _entityMasks[entity.Index] = _entityMasks[entity.Index].Set(componentTypeIndex);
         }
 
@@ -147,7 +141,6 @@ namespace Portfolio.Entities
             ValidateEntity(entity);
 
             var componentTypeIndex = GetComponentTypeIndex<T>();
-
             _entityMasks[entity.Index] = _entityMasks[entity.Index].Unset(componentTypeIndex);
         }
 
@@ -194,7 +187,12 @@ namespace Portfolio.Entities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ValidateEntity(Entity entity)
         {
-            Debug.Assert(IsValidEntity(entity), "Entity version mismatch.");
+            if (IsValidEntity(entity))
+            {
+                return;
+            }
+
+            throw new Exception($"Entity version mismatch. Entity index: {entity.Index}");
         }
     }
 }

@@ -35,7 +35,6 @@ public class Simulation
             _lock.EnterWriteLock();
 
             var delta = (float) _stopwatch.Elapsed.TotalSeconds;
-
             _stopwatch.Restart();
 
             for (var i = 0; i < _systems.Length; i++)
