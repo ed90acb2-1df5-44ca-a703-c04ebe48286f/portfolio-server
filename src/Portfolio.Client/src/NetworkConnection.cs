@@ -11,7 +11,7 @@ namespace Portfolio.Client
 {
     public class NetworkConnection : INetEventListener
     {
-        private readonly Dictionary<ulong, Action<int, NetDataReader>> _handlers = new();
+        private readonly Dictionary<Opcode, Action<int, NetDataReader>> _handlers = new();
         private readonly BufferWriter _buffer = new();
         private readonly NetManager _manager;
 
@@ -39,11 +39,11 @@ namespace Portfolio.Client
             _manager.Stop();
         }
 
-        public void RegisterHandler<TMessage>(Action<TMessage> handler) where TMessage : class, IMessage, new()
+        public void RegisterHandler<TMessage>(Opcode opcode, Action<TMessage> handler) where TMessage : class, IMessage, new()
         {
             var packet = new TMessage();
 
-            _handlers[PacketHash.Get<TMessage>()] = (peer, reader) =>
+            _handlers[opcode] = (peer, reader) =>
             {
                 //Console.WriteLine($"Processing Packet: {typeof(TMessage).Name}");
 
@@ -62,7 +62,7 @@ namespace Portfolio.Client
             }
 
             _buffer.Reset();
-            _buffer.Write(PacketHash.Get<TMessage>());
+            _buffer.Write((uint) Opcodes.Get<TMessage>());
 
             message.WriteTo(_buffer);
 
@@ -90,13 +90,15 @@ namespace Portfolio.Client
         {
             //Console.WriteLine("OnNetworkReceive");
 
-            if (_handlers.TryGetValue(reader.GetULong(), out var handler))
+            var opcode = (Opcode) reader.GetUInt();
+
+            if (_handlers.TryGetValue(opcode, out var handler))
             {
                 handler.Invoke(peer.Id, reader);
             }
             else
             {
-                Console.WriteLine("OnNetworkReceive: no packet handler");
+                Console.WriteLine($"OnNetworkReceive: no packet handler. Opcode: {opcode.ToString()}");
             }
         }
 

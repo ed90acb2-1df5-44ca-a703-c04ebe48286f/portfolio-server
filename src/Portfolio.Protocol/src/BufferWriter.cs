@@ -39,6 +39,13 @@ namespace Portfolio.Protocol
             Write(valueBytes);
         }
 
+        public void Write(uint value)
+        {
+            Span<byte> valueBytes = stackalloc byte[sizeof(uint)];
+            BitConverter.TryWriteBytes(valueBytes, value);
+            Write(valueBytes);
+        }
+
         public void Write(ReadOnlySpan<byte> data)
         {
             EnsureCapacity(data.Length);

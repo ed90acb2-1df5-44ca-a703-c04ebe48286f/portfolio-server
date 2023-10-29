@@ -21,7 +21,7 @@ namespace Portfolio.Startup.Net
     public class LiteNetLibNetworking : INetworking, INetEventListener
     {
         private readonly ConcurrentDictionary<Connection, NetPeer> _peers = new();
-        private readonly Dictionary<ulong, Func<NetPeer, NetDataReader, Task>> _handlers = new();
+        private readonly Dictionary<Opcode, Func<NetPeer, NetDataReader, Task>> _handlers = new();
         private readonly BufferWriter _buffer = new();
         private readonly NetManager _manager;
 
@@ -44,7 +44,7 @@ namespace Portfolio.Startup.Net
         {
             var packet = new TPacket();
 
-            _handlers[PacketHash.Get<TPacket>()] = async (peer, reader) =>
+            _handlers[Opcodes.Get<TPacket>()] = async (peer, reader) =>
             {
                 try
                 {
@@ -142,13 +142,15 @@ namespace Portfolio.Startup.Net
         {
             //_logger.LogDebug("OnNetworkReceive");
 
-            if (_handlers.TryGetValue(ReadPacketHash(reader), out var handler))
+            var opcode = ReadOpcode(reader);
+
+            if (_handlers.TryGetValue(opcode, out var handler))
             {
                 handler.Invoke(peer, reader);
             }
             else
             {
-                _logger.LogWarning("Handler not found");
+                _logger.LogWarning($"Handler not found. Opcode: {opcode.ToString()}");
             }
         }
 
@@ -184,7 +186,7 @@ namespace Portfolio.Startup.Net
         private static void Serialize<TPacket>(TPacket packet, BufferWriter buffer)
         {
             buffer.Reset();
-            buffer.Write(PacketHash.Get<TPacket>());
+            buffer.Write((uint) Opcodes.Get<TPacket>());
 
             ((IMessage) packet!).WriteTo(buffer);
         }
@@ -194,9 +196,9 @@ namespace Portfolio.Startup.Net
             ((IMessage) packet!).MergeFrom(data);
         }
 
-        private static ulong ReadPacketHash(NetDataReader reader)
+        private static Opcode ReadOpcode(NetDataReader reader)
         {
-            return reader.GetULong();
+            return (Opcode) reader.GetUInt();
         }
     }
 }

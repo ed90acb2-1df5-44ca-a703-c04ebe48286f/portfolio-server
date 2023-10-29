@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Portfolio.Client;
+using Portfolio.Protocol;
 using Portfolio.Protocol.Commands;
 using Portfolio.Protocol.Messages;
 using Timer = System.Timers.Timer;
@@ -18,13 +19,13 @@ timer.Start();
 
 var networkConnection = new NetworkConnection();
 networkConnection.Open("127.0.0.1", 1447, "secret");
-networkConnection.RegisterHandler<LoginMessage>((packet) =>
+networkConnection.RegisterHandler<LoginMessage>(Opcode.LoginMessage, (packet) =>
 {
     counter = Interlocked.Increment(ref counter);
     //Console.WriteLine($"Packet Data: {packet.Token}");
 });
 
-networkConnection.RegisterHandler<BroadcastMessage>((packet) =>
+networkConnection.RegisterHandler<BroadcastMessage>(Opcode.BroadcastMessage, (packet) =>
 {
     Console.WriteLine($"Broadcast received {packet.Positions.Count}");
 });

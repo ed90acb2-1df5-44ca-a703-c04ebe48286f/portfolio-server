@@ -4,10 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Portfolio.Application;
-using Portfolio.Application.Controllers;
 using Portfolio.Application.Net;
 using Portfolio.Application.Security;
-using Portfolio.Protocol.Commands;
 using Portfolio.Startup.Extensions;
 using Portfolio.Startup.Logging;
 using Portfolio.Startup.Net;
@@ -40,7 +38,6 @@ public static class Program
             .AddSerilog(configuration)
             .BuildServiceProvider();
 
-        RegisterControllers(services);
         RunMigrations(services);
 
         services.GetRequiredService<Server>().Start();
@@ -51,11 +48,5 @@ public static class Program
         using var scope = services.CreateScope();
         var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
         runner.MigrateUp();
-    }
-
-    private static void RegisterControllers(IServiceProvider services)
-    {
-        var networking = services.GetRequiredService<INetworking>();
-        networking.RegisterController<LoginCommand, LoginController>();
     }
 }
