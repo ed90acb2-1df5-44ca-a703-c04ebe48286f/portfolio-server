@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Portfolio.Entities\Portfolio.Entities.csproj" />
+        <ProjectReference Include="..\Portfolio.Gameplay\Portfolio.Gameplay.csproj" />
+        <ProjectReference Include="..\Portfolio.Protocol\Portfolio.Protocol.csproj"/>
     </ItemGroup>
 
 </Project>

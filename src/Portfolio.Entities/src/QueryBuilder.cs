@@ -1,3 +1,5 @@
+using Portfolio.Entities.Collections;
+
 namespace Portfolio.Entities
 {
     public struct QueryBuilder

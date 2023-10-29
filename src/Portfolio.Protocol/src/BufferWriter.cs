@@ -5,31 +5,31 @@ namespace Portfolio.Protocol
 {
     public class BufferWriter : IBufferWriter<byte>
     {
-        private byte[] _buffer;
-        private int _position;
+        public int Position;
+        public byte[] Buffer;
 
         public BufferWriter(int capacity = 1024)
         {
-            _buffer = new byte[capacity];
-            _position = 0;
+            Buffer = new byte[capacity];
+            Position = 0;
         }
 
         public void Advance(int count)
         {
             EnsureCapacity(count);
-            _position += count;
+            Position += count;
         }
 
         public Memory<byte> GetMemory(int sizeHint = 0)
         {
             EnsureCapacity(sizeHint);
-            return _buffer.AsMemory(_position);
+            return Buffer.AsMemory(Position);
         }
 
         public Span<byte> GetSpan(int sizeHint = 0)
         {
             EnsureCapacity(sizeHint);
-            return _buffer.AsSpan(_position);
+            return Buffer.AsSpan(Position);
         }
 
         public void Write(ulong value)
@@ -42,29 +42,29 @@ namespace Portfolio.Protocol
         public void Write(ReadOnlySpan<byte> data)
         {
             EnsureCapacity(data.Length);
-            data.CopyTo(_buffer.AsSpan(_position));
-            _position += data.Length;
+            data.CopyTo(Buffer.AsSpan(Position));
+            Position += data.Length;
         }
 
         public void Reset()
         {
-            _position = 0;
+            Position = 0;
         }
 
-        public ReadOnlySpan<byte> Data()
+        public ReadOnlySpan<byte> AsSpan()
         {
-            return _buffer.AsSpan(0, _position);
+            return Buffer.AsSpan(0, Position);
         }
 
         private void EnsureCapacity(int sizeHint)
         {
-            if (_position + sizeHint <= _buffer.Length)
+            if (Position + sizeHint <= Buffer.Length)
             {
                 return;
             }
 
-            var newSize = Math.Max(_position + sizeHint, _buffer.Length * 2);
-            Array.Resize(ref _buffer, newSize);
+            var newSize = Math.Max(Position + sizeHint, Buffer.Length * 2);
+            Array.Resize(ref Buffer, newSize);
         }
     }
 }

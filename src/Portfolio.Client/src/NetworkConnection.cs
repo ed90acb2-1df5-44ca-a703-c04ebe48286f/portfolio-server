@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using Google.Protobuf;
@@ -64,7 +66,7 @@ namespace Portfolio.Client
 
             message.WriteTo(_buffer);
 
-            _peer.Send(_buffer.Data(), DeliveryMethod.ReliableOrdered);
+            _peer.Send(_buffer.AsSpan(), DeliveryMethod.ReliableOrdered);
         }
 
         public void OnPeerConnected(NetPeer peer)

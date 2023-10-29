@@ -1,4 +1,7 @@
-﻿using Portfolio.Client;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Portfolio.Client;
 using Portfolio.Protocol.Commands;
 using Portfolio.Protocol.Messages;
 using Timer = System.Timers.Timer;
@@ -19,6 +22,11 @@ networkConnection.RegisterHandler<LoginMessage>((packet) =>
 {
     counter = Interlocked.Increment(ref counter);
     //Console.WriteLine($"Packet Data: {packet.Token}");
+});
+
+networkConnection.RegisterHandler<BroadcastMessage>((packet) =>
+{
+    Console.WriteLine($"Broadcast received {packet.Positions.Count}");
 });
 
 while (true)

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Server", "src\Portfolio.Server\Portfolio.Server.csproj", "{9D836D06-58D8-467F-B334-702D6FC71A2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Startup", "src\Portfolio.Startup\Portfolio.Startup.csproj", "{9D836D06-58D8-467F-B334-702D6FC71A2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Protocol", "src\Portfolio.Protocol\Portfolio.Protocol.csproj", "{A16245B4-2B0F-4490-9C1D-0A9CE30ACC3F}"
 EndProject
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Gameplay", "src\Portfolio.Gameplay\Portfolio.Gameplay.csproj", "{649EDE44-6782-42FE-9E7F-6724C1E4F2D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "src\Portfolio.Entities\Portfolio.Entities.csproj", "{7C84AFED-C130-4597-8C46-DC959C40B9F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Application", "src\Portfolio.Application\Portfolio.Application.csproj", "{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +38,9 @@ Global
 		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C84AFED-C130-4597-8C46-DC959C40B9F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

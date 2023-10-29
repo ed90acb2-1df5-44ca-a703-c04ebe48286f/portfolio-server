@@ -5,3 +5,12 @@ option csharp_namespace = "Portfolio.Protocol.Messages";
 message LoginMessage {
     string Token = 1;
 }
+
+message BroadcastMessage {
+    message Vector2 {
+        float X = 1;
+        float Y = 2;
+    }
+
+    repeated Vector2 Positions = 1;
+}

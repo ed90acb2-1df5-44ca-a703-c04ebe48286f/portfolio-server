@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Portfolio.Entities.Collections;
 
 namespace Portfolio.Entities
 {
