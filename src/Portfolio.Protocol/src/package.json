@@ -1,0 +1,7 @@
+{
+    "name": "com.portfolio.protocol",
+    "version": "1.0.0",
+    "displayName": "Portfolio Protocol",
+    "description": "Portfolio Protocol",
+    "type": "library"
+}

@@ -1,5 +1,7 @@
 .idea
-.DS_Store
-*.dotSettings.user
 bin
 obj
+
+.DS_Store
+*.meta
+*.dotSettings.user

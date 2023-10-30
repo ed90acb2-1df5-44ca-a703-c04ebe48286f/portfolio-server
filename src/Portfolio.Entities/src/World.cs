@@ -30,7 +30,6 @@ namespace Portfolio.Entities
         public ReadOnlySpan<Entity> Query(Query query)
         {
             var matchQueryRequired = !query.RequiredMask.IsEmpty();
-            var matchQueryOptional = !query.OptionalMask.IsEmpty();
             var matchQueryExcluded = !query.ExcludedMask.IsEmpty();
             var matchedEntitiesCount = 0;
 
@@ -44,8 +43,7 @@ namespace Portfolio.Entities
                 }
 
                 if (matchQueryRequired && !mask.ContainsAll(query.RequiredMask) ||
-                    matchQueryOptional && !mask.ContainsAny(query.OptionalMask) ||
-                    matchQueryExcluded && query.ExcludedMask.ContainsAny(mask))
+                    matchQueryExcluded && mask.ContainsAny(query.ExcludedMask))
                 {
                     continue;
                 }
