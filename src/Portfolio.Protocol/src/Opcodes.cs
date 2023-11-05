@@ -1,22 +1,28 @@
-using System;
-using System.Collections.Generic;
-using Portfolio.Protocol.Commands;
-using Portfolio.Protocol.Messages;
-
 namespace Portfolio.Protocol
 {
     public class Opcodes
     {
-        private static readonly Dictionary<Type, Opcode> _dictionary = new()
+        public static ulong Get<T>()
         {
-            {typeof(LoginCommand), Opcode.LoginCommand},
-            {typeof(LoginMessage), Opcode.LoginMessage},
-            {typeof(BroadcastMessage), Opcode.BroadcastMessage},
-        };
+            return HashCache<T>.Value;
+        }
 
-        public static Opcode Get<T>()
+        private static class HashCache<T>
         {
-            return _dictionary[typeof(T)];
+            // ReSharper disable once StaticMemberInGenericType
+            public static readonly ulong Value;
+
+            static HashCache()
+            {
+                var num1 = 14695981039346656037;
+
+                foreach (ulong num2 in typeof(T).ToString())
+                {
+                    num1 = (num1 ^ num2) * 1099511628211UL;
+                }
+
+                Value = num1;
+            }
         }
     }
 }

@@ -10,6 +10,10 @@
         <PackageReference Include="Google.Protobuf" Version="3.25.0-rc2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="src\Generated\" />
+    </ItemGroup>
+
     <PropertyGroup>
         <ProtoOutput>$(MSBuildProjectDirectory)/src/Generated</ProtoOutput>
         <ProtoPath>$(MSBuildProjectDirectory)/src/Proto</ProtoPath>

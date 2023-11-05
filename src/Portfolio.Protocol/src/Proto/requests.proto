@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "values.proto";
+
+option csharp_namespace = "Portfolio.Protocol.Requests";
+
+message InputRequest {
+    Vector2 Direction = 1;
+}

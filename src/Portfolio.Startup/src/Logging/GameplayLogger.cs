@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Portfolio.Startup.Logging;
 
-public class GameplayLogger : Application.ILogger
+public class GameplayLogger : Server.ILogger
 {
     private readonly ILogger _logger;
 

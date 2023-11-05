@@ -53,5 +53,10 @@ namespace Portfolio.Entities
         {
             return !left.Equals(right);
         }
+
+        public static implicit operator int(Entity entity)
+        {
+            return entity.Index;
+        }
     }
 }

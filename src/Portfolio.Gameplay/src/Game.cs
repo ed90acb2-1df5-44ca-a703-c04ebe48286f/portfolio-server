@@ -22,7 +22,7 @@ public class Game
 
         _systems = new ISystem[]
         {
-            new MovementSystem(_world)
+            new TranslationSystem(_world)
         };
     }
 
@@ -53,8 +53,8 @@ public class Game
             _lock.EnterWriteLock();
 
             var entity = _world.Create();
-            _world.SetComponent(entity, new PositionComponent());
-            _world.SetComponent(entity, new VelocityComponent());
+            _world.SetComponent(entity, new Position());
+            _world.SetComponent(entity, new Velocity());
             _characters[peer] = entity;
         }
         finally

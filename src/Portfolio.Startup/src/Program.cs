@@ -3,14 +3,14 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Portfolio.Application;
-using Portfolio.Application.Net;
-using Portfolio.Application.Security;
+using Portfolio.Gameplay;
+using Portfolio.Server.Net;
+using Portfolio.Server.Security;
 using Portfolio.Startup.Extensions;
 using Portfolio.Startup.Logging;
 using Portfolio.Startup.Net;
 using Portfolio.Startup.Security;
-using ILogger = Portfolio.Application.ILogger;
+using ILogger = Portfolio.Server.ILogger;
 
 namespace Portfolio.Startup;
 
@@ -25,7 +25,8 @@ public static class Program
             .Build();
 
         var services = new ServiceCollection()
-            .AddSingleton<Server>()
+            .AddSingleton<Server.Server>()
+            .AddSingleton<Game>()
             .AddSingleton<INetworking, LiteNetLibNetworking>()
             .AddSingleton<IPasswordHasher, BcryptPasswordHasher>()
             .AddSingleton<SessionStorage>()
@@ -40,7 +41,7 @@ public static class Program
 
         RunMigrations(services);
 
-        services.GetRequiredService<Server>().Start();
+        services.GetRequiredService<Server.Server>().Start();
     }
 
     private static void RunMigrations(IServiceProvider services)

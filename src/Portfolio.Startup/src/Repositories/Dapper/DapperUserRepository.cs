@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Portfolio.Application.Models;
-using Portfolio.Application.Repositories;
+using Portfolio.Server.Models;
+using Portfolio.Server.Repositories;
 
 namespace Portfolio.Startup.Repositories.Dapper;
 
@@ -35,5 +35,12 @@ public class DapperUserRepository : IUserRepository
         const string query = "SELECT * FROM \"Users\" WHERE \"Login\" = @Login";
 
         return await _connection.QueryFirstOrDefaultAsync<User>(query, new {Login = login});
+    }
+
+    public async Task SaveAsync(User user)
+    {
+        const string query = "INSERT INTO \"Users\" (Login, PasswordHash) VALUES (@Login, @PasswordHash)";
+
+        await _connection.ExecuteAsync(query, user);
     }
 }

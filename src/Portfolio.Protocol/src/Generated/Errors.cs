@@ -24,23 +24,23 @@ namespace Portfolio.Protocol.Errors {
     static ErrorsReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxlcnJvcnMucHJvdG8iLwoMRXJyb3JNZXNzYWdlEh8KBENvZGUYASABKA4y",
-            "ES5FcnJvck1lc3NhZ2VDb2RlKmQKEEVycm9yTWVzc2FnZUNvZGUSDQoJVW5k",
-            "ZWZpbmVkEAASGwoXUmVnaXN0cmF0aW9uTG9naW5FeGlzdHMQARIkCiBBdXRo",
-            "ZW50aWNhdGlvbkludmFsaWRDcmVkZW50aWFscxACQhyqAhlQb3J0Zm9saW8u",
-            "UHJvdG9jb2wuRXJyb3JzYgZwcm90bzM="));
+            "CgxlcnJvcnMucHJvdG8iPQoMRXJyb3JNZXNzYWdlEhgKBENvZGUYASABKA4y",
+            "Ci5FcnJvckNvZGUSEwoLRGVzY3JpcHRpb24YAiABKAkqWwoJRXJyb3JDb2Rl",
+            "EgsKB1N1Y2Nlc3MQABIbChdSZWdpc3RyYXRpb25Mb2dpbkV4aXN0cxABEiQK",
+            "IEF1dGhlbnRpY2F0aW9uSW52YWxpZENyZWRlbnRpYWxzEAJCHKoCGVBvcnRm",
+            "b2xpby5Qcm90b2NvbC5FcnJvcnNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Portfolio.Protocol.Errors.ErrorMessageCode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Errors.ErrorMessage), global::Portfolio.Protocol.Errors.ErrorMessage.Parser, new[]{ "Code" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Portfolio.Protocol.Errors.ErrorCode), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Errors.ErrorMessage), global::Portfolio.Protocol.Errors.ErrorMessage.Parser, new[]{ "Code", "Description" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Enums
-  public enum ErrorMessageCode {
-    [pbr::OriginalName("Undefined")] Undefined = 0,
+  public enum ErrorCode {
+    [pbr::OriginalName("Success")] Success = 0,
     [pbr::OriginalName("RegistrationLoginExists")] RegistrationLoginExists = 1,
     [pbr::OriginalName("AuthenticationInvalidCredentials")] AuthenticationInvalidCredentials = 2,
   }
@@ -83,6 +83,7 @@ namespace Portfolio.Protocol.Errors {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ErrorMessage(ErrorMessage other) : this() {
       code_ = other.code_;
+      description_ = other.description_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -94,13 +95,25 @@ namespace Portfolio.Protocol.Errors {
 
     /// <summary>Field number for the "Code" field.</summary>
     public const int CodeFieldNumber = 1;
-    private global::Portfolio.Protocol.Errors.ErrorMessageCode code_ = global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined;
+    private global::Portfolio.Protocol.Errors.ErrorCode code_ = global::Portfolio.Protocol.Errors.ErrorCode.Success;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Portfolio.Protocol.Errors.ErrorMessageCode Code {
+    public global::Portfolio.Protocol.Errors.ErrorCode Code {
       get { return code_; }
       set {
         code_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Description" field.</summary>
+    public const int DescriptionFieldNumber = 2;
+    private string description_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Description {
+      get { return description_; }
+      set {
+        description_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -120,6 +133,7 @@ namespace Portfolio.Protocol.Errors {
         return true;
       }
       if (Code != other.Code) return false;
+      if (Description != other.Description) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -127,7 +141,8 @@ namespace Portfolio.Protocol.Errors {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Code != global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined) hash ^= Code.GetHashCode();
+      if (Code != global::Portfolio.Protocol.Errors.ErrorCode.Success) hash ^= Code.GetHashCode();
+      if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -146,9 +161,13 @@ namespace Portfolio.Protocol.Errors {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Code != global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined) {
+      if (Code != global::Portfolio.Protocol.Errors.ErrorCode.Success) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Code);
+      }
+      if (Description.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Description);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -160,9 +179,13 @@ namespace Portfolio.Protocol.Errors {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Code != global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined) {
+      if (Code != global::Portfolio.Protocol.Errors.ErrorCode.Success) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Code);
+      }
+      if (Description.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Description);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -174,8 +197,11 @@ namespace Portfolio.Protocol.Errors {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Code != global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined) {
+      if (Code != global::Portfolio.Protocol.Errors.ErrorCode.Success) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Code);
+      }
+      if (Description.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -189,8 +215,11 @@ namespace Portfolio.Protocol.Errors {
       if (other == null) {
         return;
       }
-      if (other.Code != global::Portfolio.Protocol.Errors.ErrorMessageCode.Undefined) {
+      if (other.Code != global::Portfolio.Protocol.Errors.ErrorCode.Success) {
         Code = other.Code;
+      }
+      if (other.Description.Length != 0) {
+        Description = other.Description;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -208,7 +237,11 @@ namespace Portfolio.Protocol.Errors {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Code = (global::Portfolio.Protocol.Errors.ErrorMessageCode) input.ReadEnum();
+            Code = (global::Portfolio.Protocol.Errors.ErrorCode) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            Description = input.ReadString();
             break;
           }
         }
@@ -227,7 +260,11 @@ namespace Portfolio.Protocol.Errors {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            Code = (global::Portfolio.Protocol.Errors.ErrorMessageCode) input.ReadEnum();
+            Code = (global::Portfolio.Protocol.Errors.ErrorCode) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            Description = input.ReadString();
             break;
           }
         }

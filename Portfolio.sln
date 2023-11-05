@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Gameplay", "src\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "src\Portfolio.Entities\Portfolio.Entities.csproj", "{7C84AFED-C130-4597-8C46-DC959C40B9F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Application", "src\Portfolio.Application\Portfolio.Application.csproj", "{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Server", "src\Portfolio.Server\Portfolio.Server.csproj", "{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

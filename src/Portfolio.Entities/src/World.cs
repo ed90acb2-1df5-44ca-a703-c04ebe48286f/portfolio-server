@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Portfolio.Entities.Collections;
 
 namespace Portfolio.Entities
@@ -14,8 +13,9 @@ namespace Portfolio.Entities
         private Entity[] _entities;
         private Entity[] _entityBuffer;
         private Bitmask255[] _entityMasks;
-        private int _entityCounter = -1;
-        private readonly Queue<Entity> _entityGraveyard = new(32);
+        private int _entityCounter;
+
+        private readonly Queue<Entity> _graveyard = new(32);
 
         private readonly IList[] _components = new IList[MaxComponentTypes];
         private readonly Dictionary<Type, int> _componentTypeIndexes = new(MaxComponentTypes);
@@ -56,9 +56,9 @@ namespace Portfolio.Entities
 
         public Entity Create()
         {
-            var entity = _entityGraveyard.Count > 0
-                ? _entityGraveyard.Dequeue().WithNewVersion()
-                : new Entity(Interlocked.Increment(ref _entityCounter));
+            var entity = _graveyard.Count > 0
+                ? _graveyard.Dequeue().WithNewVersion()
+                : new Entity(_entityCounter++);
 
             if (!_entities.IndexInBounds(entity.Index))
             {
@@ -79,7 +79,7 @@ namespace Portfolio.Entities
 
             TriggerComponentsOnDestroy(entity);
 
-            _entityGraveyard.Enqueue(entity);
+            _graveyard.Enqueue(entity);
             _entities[entity.Index] = Entity.Empty;
         }
 

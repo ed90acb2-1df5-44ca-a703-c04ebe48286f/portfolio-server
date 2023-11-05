@@ -5,8 +5,8 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Portfolio.Application.Controllers;
-using Portfolio.Application.Repositories;
+using Portfolio.Server.Controllers;
+using Portfolio.Server.Repositories;
 using Portfolio.Startup.Repositories.Dapper;
 using Portfolio.Startup.Settings;
 using Serilog;
@@ -21,7 +21,8 @@ public static class ServiceCollectionExtensions
         {
             var controllerType = typeof(IController<>);
 
-            if (type is {IsClass: true, IsAbstract: false} && type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == controllerType))
+            if (type is {IsClass: true, IsAbstract: false} &&
+                type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == controllerType))
             {
                 services.AddScoped(type);
             }

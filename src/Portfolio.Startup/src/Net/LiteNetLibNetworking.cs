@@ -10,18 +10,20 @@ using LiteNetLib.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Portfolio.Application.Controllers;
-using Portfolio.Application.Net;
+using Portfolio.Server.Controllers;
+using Portfolio.Server.Net;
 using Portfolio.Protocol;
+using Portfolio.Protocol.Authentication;
+using Portfolio.Server.Security;
 using Portfolio.Startup.Settings;
-using DeliveryMethod = Portfolio.Application.Net.DeliveryMethod;
+using DeliveryMethod = Portfolio.Server.Net.DeliveryMethod;
 
 namespace Portfolio.Startup.Net
 {
     public class LiteNetLibNetworking : INetworking, INetEventListener
     {
         private readonly ConcurrentDictionary<Connection, NetPeer> _peers = new();
-        private readonly Dictionary<Opcode, Func<NetPeer, NetDataReader, Task>> _handlers = new();
+        private readonly Dictionary<ulong, Func<NetPeer, NetDataReader, Task>> _handlers = new();
         private readonly BufferWriter _buffer = new();
         private readonly NetManager _manager;
 
@@ -44,14 +46,26 @@ namespace Portfolio.Startup.Net
         {
             var packet = new TPacket();
 
+            // TODO: Middlewares
+            var authentication = _serviceProvider.GetRequiredService<Authentication>();
+            var authenticationRequired = !(packet is LoginRequest || packet is RegistrationRequest);
+
             _handlers[Opcodes.Get<TPacket>()] = async (peer, reader) =>
             {
+                var connection = (Connection) peer.Tag;
+
+                if (authenticationRequired && authentication.IsAuthenticated(connection))
+                {
+                    _logger.LogWarning($"Unauthenticated call to: {nameof(TController)}");
+                    return;
+                }
+
                 try
                 {
                     Hydrate(packet, reader.GetRemainingBytes());
 
                     await using var scope = _serviceProvider.CreateAsyncScope();
-                    await scope.ServiceProvider.GetRequiredService<TController>().Handle((Connection) peer.Tag, packet);
+                    await scope.ServiceProvider.GetRequiredService<TController>().Handle(connection, packet);
                 }
                 catch (Exception exception)
                 {
@@ -186,7 +200,7 @@ namespace Portfolio.Startup.Net
         private static void Serialize<TPacket>(TPacket packet, BufferWriter buffer)
         {
             buffer.Reset();
-            buffer.Write((uint) Opcodes.Get<TPacket>());
+            buffer.Write(Opcodes.Get<TPacket>());
 
             ((IMessage) packet!).WriteTo(buffer);
         }
@@ -196,9 +210,9 @@ namespace Portfolio.Startup.Net
             ((IMessage) packet!).MergeFrom(data);
         }
 
-        private static Opcode ReadOpcode(NetDataReader reader)
+        private static ulong ReadOpcode(NetDataReader reader)
         {
-            return (Opcode) reader.GetUInt();
+            return reader.GetULong();
         }
     }
 }

@@ -3,31 +3,40 @@
 
 ## Table of Contents
 
-- [commands.proto](#commands-proto)
-    - [LoginCommand](#-LoginCommand)
+- [authentication.proto](#authentication-proto)
+    - [LoginRequest](#-LoginRequest)
+    - [LoginResponse](#-LoginResponse)
+    - [RegistrationRequest](#-RegistrationRequest)
+    - [RegistrationResponse](#-RegistrationResponse)
   
 - [errors.proto](#errors-proto)
     - [ErrorMessage](#-ErrorMessage)
   
-    - [ErrorMessageCode](#-ErrorMessageCode)
+    - [ErrorCode](#-ErrorCode)
   
 - [messages.proto](#messages-proto)
-    - [LoginMessage](#-LoginMessage)
+    - [BroadcastMessage](#-BroadcastMessage)
+  
+- [requests.proto](#requests-proto)
+    - [InputRequest](#-InputRequest)
+  
+- [values.proto](#values-proto)
+    - [Vector2](#-Vector2)
   
 - [Scalar Value Types](#scalar-value-types)
 
 
 
-<a name="commands-proto"></a>
+<a name="authentication-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## commands.proto
+## authentication.proto
 
 
 
-<a name="-LoginCommand"></a>
+<a name="-LoginRequest"></a>
 
-### LoginCommand
+### LoginRequest
 
 
 
@@ -35,6 +44,53 @@
 | ----- | ---- | ----- | ----------- |
 | Login | [string](#string) |  |  |
 | Password | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="-LoginResponse"></a>
+
+### LoginResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Token | [string](#string) |  |  |
+| ErrorCode | [ErrorCode](#ErrorCode) |  |  |
+
+
+
+
+
+
+<a name="-RegistrationRequest"></a>
+
+### RegistrationRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Login | [string](#string) |  |  |
+| Password | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="-RegistrationResponse"></a>
+
+### RegistrationResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ErrorCode | [ErrorCode](#ErrorCode) |  |  |
 
 
 
@@ -65,7 +121,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Code | [ErrorMessageCode](#ErrorMessageCode) |  |  |
+| Code | [ErrorCode](#ErrorCode) |  |  |
+| Description | [string](#string) |  |  |
 
 
 
@@ -74,14 +131,14 @@
  
 
 
-<a name="-ErrorMessageCode"></a>
+<a name="-ErrorCode"></a>
 
-### ErrorMessageCode
+### ErrorCode
 
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| Undefined | 0 |  |
+| Success | 0 |  |
 | RegistrationLoginExists | 1 |  |
 | AuthenticationInvalidCredentials | 2 |  |
 
@@ -101,15 +158,78 @@
 
 
 
-<a name="-LoginMessage"></a>
+<a name="-BroadcastMessage"></a>
 
-### LoginMessage
+### BroadcastMessage
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Token | [string](#string) |  |  |
+| Positions | [Vector2](#Vector2) | repeated |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="requests-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## requests.proto
+
+
+
+<a name="-InputRequest"></a>
+
+### InputRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Direction | [Vector2](#Vector2) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="values-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## values.proto
+
+
+
+<a name="-Vector2"></a>
+
+### Vector2
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| X | [float](#float) |  |  |
+| Y | [float](#float) |  |  |
 
 
 

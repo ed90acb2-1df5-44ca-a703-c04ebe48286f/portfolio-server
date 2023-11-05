@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "errors.proto";
+
+option csharp_namespace = "Portfolio.Protocol.Authentication";
+
+message LoginRequest {
+    string Login = 1;
+    string Password = 2;
+}
+
+message LoginResponse {
+    string Token = 1;
+    ErrorCode ErrorCode = 2;
+}
+
+message RegistrationRequest {
+    string Login = 1;
+    string Password = 2;
+}
+
+message RegistrationResponse {
+    ErrorCode ErrorCode = 1;
+}
