@@ -1,22 +1,18 @@
-using Portfolio.Server.Controllers;
-
 namespace Portfolio.Server.Net;
 
 public interface INetworking
 {
+    void SetRouter(Router router);
+
     void Start();
 
     void Update();
 
     void Stop();
 
-    void Send<TMessage>(Connection connection, TMessage packet, DeliveryMethod deliveryMethod = DeliveryMethod.Reliable);
+    void Send<TMessage>(Connection connection, TMessage message, DeliveryMethod deliveryMethod = DeliveryMethod.Reliable);
 
-    void Broadcast<TPacket>(TPacket packet, DeliveryMethod deliveryMethod);
+    void Broadcast<TMessage>(TMessage message, DeliveryMethod deliveryMethod);
 
-    void BroadcastExcept<TPacket>(TPacket packet, DeliveryMethod deliveryMethod, Connection connection);
-
-    void RegisterController<TPacket, TController>()
-        where TController : IController<TPacket>
-        where TPacket : new();
+    void BroadcastExcept<TMessage>(TMessage message, DeliveryMethod deliveryMethod, Connection connection);
 }

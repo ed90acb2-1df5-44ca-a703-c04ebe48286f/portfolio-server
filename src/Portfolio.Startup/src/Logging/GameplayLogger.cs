@@ -22,6 +22,11 @@ public class GameplayLogger : Server.ILogger
         _logger.LogInformation(message);
     }
 
+    public void Warning(string message)
+    {
+        _logger.LogWarning(message);
+    }
+
     public void Error(string message)
     {
         _logger.LogError(message);

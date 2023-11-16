@@ -41,4 +41,8 @@
 
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="src\Controllers\" />
+    </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ using Portfolio.Gameplay.Components;
 
 namespace Portfolio.Gameplay.Queries;
 
-public class CharacterPositionsQuery : IQuery<CharacterPositionsQuery.Result>
+public readonly struct CharacterPositionsQuery : IQuery<CharacterPositionsQuery.Result>
 {
     public Result Execute(World world)
     {

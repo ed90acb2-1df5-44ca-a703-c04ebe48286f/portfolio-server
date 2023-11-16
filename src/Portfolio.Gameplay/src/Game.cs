@@ -76,7 +76,7 @@ public class Game
         }
     }
 
-    public void Command(ICommand command)
+    public void Command<TCommand>(TCommand command) where TCommand : ICommand
     {
         try
         {
@@ -89,7 +89,7 @@ public class Game
         }
     }
 
-    public T Query<T>(IQuery<T> query)
+    public TResult Query<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
     {
         try
         {

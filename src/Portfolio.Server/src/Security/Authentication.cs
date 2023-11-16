@@ -9,9 +9,9 @@ public class Authentication
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly SessionStorage _sessionStorage;
+    private readonly ISessionStorage _sessionStorage;
 
-    public Authentication(IUserRepository userRepository, IPasswordHasher passwordHasher, SessionStorage sessionStorage)
+    public Authentication(IUserRepository userRepository, IPasswordHasher passwordHasher, ISessionStorage sessionStorage)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
@@ -20,7 +20,7 @@ public class Authentication
 
     public bool IsAuthenticated(Connection connection)
     {
-        return _sessionStorage.Contains(connection);
+        return _sessionStorage.Exists(connection);
     }
 
     public async Task<bool> Authenticate(Connection connection, string login, string password)
@@ -32,7 +32,7 @@ public class Authentication
             return false;
         }
 
-        _sessionStorage.Create(new Session(connection, user));
+        _sessionStorage.Create(connection, user);
 
         return true;
     }

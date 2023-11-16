@@ -1,10 +1,24 @@
+using System;
+using System.Collections.Generic;
+
 namespace Portfolio.Protocol
 {
-    public class Opcodes
+    public static class Opcode
     {
+        private static readonly Dictionary<ulong, Type> _types = new();
+
+        public static Type? Type(ulong opcode)
+        {
+            return _types.GetValueOrDefault(opcode);
+        }
+
         public static ulong Get<T>()
         {
-            return HashCache<T>.Value;
+            var opcode = HashCache<T>.Value;
+
+            _types.TryAdd(opcode, typeof(T));
+
+            return opcode;
         }
 
         private static class HashCache<T>

@@ -4,7 +4,7 @@ using Portfolio.Gameplay.Components;
 
 namespace Portfolio.Gameplay.Commands;
 
-public class InputCommand : ICommand
+public readonly struct InputCommand : ICommand
 {
     private readonly int _playerId;
     private readonly Vector2 _direction;

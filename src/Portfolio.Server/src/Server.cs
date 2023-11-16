@@ -6,7 +6,9 @@ using Portfolio.Protocol.Authentication;
 using Portfolio.Protocol.Requests;
 using Portfolio.Protocol.Values;
 using Portfolio.Server.Controllers;
+using Portfolio.Server.Filters;
 using Portfolio.Server.Net;
+using Portfolio.Server.Security;
 
 namespace Portfolio.Server;
 
@@ -17,7 +19,7 @@ public class Server
     private readonly Thread _networkingThread;
     private readonly Thread _gameThread;
 
-    public Server(ILogger logger, INetworking networking)
+    public Server(ILogger logger, Router router, INetworking networking, Authentication authentication)
     {
         _logger = logger;
         _networking = networking;
@@ -26,11 +28,16 @@ public class Server
         _networkingThread.Name = "Networking";
 
         _gameThread = new Thread(GameLoop);
-        _gameThread.Name = "Simulation";
+        _gameThread.Name = "Game";
 
-        networking.RegisterController<LoginRequest, LoginController>();
-        networking.RegisterController<RegistrationRequest, RegistrationController>();
-        networking.RegisterController<InputRequest, InputController>();
+        router.CreateEndpoint<LoginRequest, LoginController>();
+        router.CreateEndpoint<RegistrationRequest, RegistrationController>();
+
+        new EndpointGroup()
+            .Add(router.CreateEndpoint<InputRequest, InputController>())
+            .Filter(new AuthenticationConnectionFilter(authentication));
+
+        _networking.SetRouter(router);
     }
 
     public void Start()
@@ -52,7 +59,7 @@ public class Server
 
     private void GameLoop()
     {
-        _logger.Information("Starting simulation...");
+        _logger.Information("Starting game...");
         var game = new Game();
 
         var broadcastThread = new Thread(BroadcastLoop);
@@ -69,11 +76,13 @@ public class Server
     {
         var game = (Game) context!;
 
+        var message = new BroadcastMessage();
+
         while (true)
         {
-            using var result = game.Query(new CharacterPositionsQuery());
+            message.Positions.Clear();
 
-            var message = new BroadcastMessage();
+            using var result = game.Query<CharacterPositionsQuery, CharacterPositionsQuery.Result>(new CharacterPositionsQuery());
 
             foreach (var position in result.Positions)
             {
