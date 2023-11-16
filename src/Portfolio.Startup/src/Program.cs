@@ -33,7 +33,6 @@ public static class Program
             .AddSingleton<IEndpointHandler, EndpointHandler>()
             .AddSingleton<IPacketSerializer, PacketSerializer>()
             .AddSingleton<ISessionStorage, InMemorySessionStorage>()
-            .AddSingleton<InMemorySessionStorage>()
             .AddSingleton<ILogger>(services => new GameplayLogger(services.GetRequiredService<ILoggerFactory>().CreateLogger("Server")))
             .AddScoped<Authentication>()
             .AddCommandHandlers()
