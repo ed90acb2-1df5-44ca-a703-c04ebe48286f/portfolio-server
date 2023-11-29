@@ -98,7 +98,7 @@ namespace Portfolio.Entities
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref readonly T GetComponent<T>(Entity entity)
+        public ref T GetComponent<T>(Entity entity)
         {
             ValidateEntity(entity);
 

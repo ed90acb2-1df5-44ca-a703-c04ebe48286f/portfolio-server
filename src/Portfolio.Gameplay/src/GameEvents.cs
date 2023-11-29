@@ -6,29 +6,31 @@ namespace Portfolio.Gameplay;
 
 public class GameEvents
 {
-    private readonly Dictionary<Type, object> _events = new();
+    private readonly Dictionary<Type, object> _queues = new();
 
     public void Add<TEvent>(TEvent @event)
     {
         var eventType = typeof(TEvent);
 
-        if (!_events.ContainsKey(eventType))
+        if (!_queues.TryGetValue(eventType, out var queue))
         {
-            _events.Add(eventType, new ConcurrentQueue<TEvent>());
+            queue = new ConcurrentQueue<TEvent>();
+            _queues.Add(eventType, queue);
         }
 
-        ((ConcurrentQueue<TEvent>) _events[eventType]).Enqueue(@event);
+        ((ConcurrentQueue<TEvent>) queue).Enqueue(@event);
     }
 
     public ConcurrentQueue<TEvent> Get<TEvent>()
     {
         var eventType = typeof(TEvent);
 
-        if (!_events.ContainsKey(eventType))
+        if (!_queues.TryGetValue(eventType, out var queue))
         {
-            _events.Add(eventType, new ConcurrentQueue<TEvent>());
+            queue = new ConcurrentQueue<TEvent>();
+            _queues.Add(eventType, queue);
         }
 
-        return (ConcurrentQueue<TEvent>) _events[eventType];
+        return (ConcurrentQueue<TEvent>) queue;
     }
 }

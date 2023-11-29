@@ -19,14 +19,16 @@ namespace Portfolio.Server;
 public class Server
 {
     private readonly ILogger _logger;
+    private readonly Game _game;
     private readonly INetworkKernel _network;
     private readonly Thread _networkingThread;
     private readonly Thread _gameThread;
     private readonly Dictionary<Type, object> _mappers = new();
 
-    public Server(ILogger logger, Router router, INetworkKernel network, Authentication authentication)
+    public Server(ILogger logger, Game game, Router router, INetworkKernel network, Authentication authentication)
     {
         _logger = logger;
+        _game = game;
         _network = network;
 
         _networkingThread = new Thread(NetworkingLoop);
@@ -66,7 +68,14 @@ public class Server
 
         while (true)
         {
-            _network.Update();
+            try
+            {
+                _network.Update();
+            }
+            catch (Exception exception)
+            {
+                _logger.Exception(exception);
+            }
 
             Thread.Sleep(1000 / 60);
         }
@@ -75,23 +84,22 @@ public class Server
     private void GameLoop()
     {
         _logger.Information("Starting game...");
-        var game = new Game();
 
         _logger.Information("Starting game event broadcast...");
         var broadcastGameEventsThread = new Thread(BroadcastGameEventsLoop);
         broadcastGameEventsThread.Name = "BroadcastGameEvents";
-        broadcastGameEventsThread.Start(game);
+        broadcastGameEventsThread.Start(_game);
 
         _logger.Information("Starting game state broadcast...");
         var broadcastGameStateThread = new Thread(BroadcastGameStateLoop);
         broadcastGameStateThread.Name = "BroadcastGameState";
-        broadcastGameStateThread.Start(game);
+        broadcastGameStateThread.Start(_game);
 
         while (true)
         {
             try
             {
-                game.Update();
+                _game.Update();
             }
             catch (Exception exception)
             {
