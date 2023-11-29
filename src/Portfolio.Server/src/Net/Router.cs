@@ -53,6 +53,6 @@ public class Router
             return;
         }
 
-        _logger.Error($"Missing handler for opcode: '{Opcode.Type(opcode)}'");
+        _logger.Error($"Missing handler for opcode: '{Opcode.Type(opcode)}' '{opcode}'");
     }
 }

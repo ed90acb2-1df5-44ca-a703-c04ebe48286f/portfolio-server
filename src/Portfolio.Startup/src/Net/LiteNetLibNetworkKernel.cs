@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using Google.Protobuf;
@@ -13,18 +14,18 @@ using DeliveryMethod = Portfolio.Server.Net.DeliveryMethod;
 
 namespace Portfolio.Startup.Net
 {
-    public class LiteNetLibNetworking : INetworking, INetEventListener
+    public class LiteNetLibNetworkKernel : INetworkKernel, INetEventListener
     {
-        private readonly ConcurrentDictionary<Connection, NetPeer> _peers = new();
+        private readonly Dictionary<Connection, NetPeer> _peers = new();
         private readonly BufferWriter _buffer = new();
         private readonly NetManager _manager;
 
-        private readonly ILogger<LiteNetLibNetworking> _logger;
+        private readonly ILogger<LiteNetLibNetworkKernel> _logger;
         private readonly IOptions<NetworkingSettings> _options;
 
         private Router _router = null!;
 
-        public LiteNetLibNetworking(ILogger<LiteNetLibNetworking> logger, IOptions<NetworkingSettings> options)
+        public LiteNetLibNetworkKernel(ILogger<LiteNetLibNetworkKernel> logger, IOptions<NetworkingSettings> options)
         {
             _logger = logger;
             _options = options;
@@ -111,10 +112,10 @@ namespace Portfolio.Startup.Net
         {
             _logger.LogDebug("OnPeerConnected");
 
-            var player = new Connection(peer.Id);
-            peer.Tag = player;
+            var connection = new Connection(peer.Id);
+            peer.Tag = connection;
 
-            _peers.TryAdd(player, peer);
+            _peers.Add(connection, peer);
         }
 
         public async void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, LiteNetLib.DeliveryMethod deliveryMethod)
@@ -127,7 +128,7 @@ namespace Portfolio.Startup.Net
 
         public void OnNetworkLatencyUpdate(NetPeer peer, int latency)
         {
-            _logger.LogDebug("OnNetworkLatencyUpdate");
+            //_logger.LogDebug("OnNetworkLatencyUpdate");
 
             var player = (Connection) peer.Tag;
             player.Ping = latency;
@@ -139,7 +140,7 @@ namespace Portfolio.Startup.Net
 
             var player = (Connection) peer.Tag;
 
-            _peers.TryRemove(player, out _);
+            _peers.Remove(player);
 
             peer.Tag = null;
         }

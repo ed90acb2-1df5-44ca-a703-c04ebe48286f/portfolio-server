@@ -17,7 +17,9 @@ public class Endpoint
     }
 }
 
-public class Endpoint<TRequest, TController> : Endpoint where TController : IController<TRequest>
+public class Endpoint<TRequest, TController> : Endpoint
+    where TController : IController<TRequest>
+    where TRequest : notnull
 {
     private readonly ILogger _logger;
     private readonly IEndpointHandler _endpointHandler;
@@ -32,7 +34,7 @@ public class Endpoint<TRequest, TController> : Endpoint where TController : ICon
     {
         for (var i = 0; i < Filters.Count; i++)
         {
-            if (!Filters[i].Filter(connection))
+            if (!Filters[i].Filter(connection, request))
             {
                 _logger.Warning($"Filter not passed: '{Filters[i].GetType().Name}'");
                 return;

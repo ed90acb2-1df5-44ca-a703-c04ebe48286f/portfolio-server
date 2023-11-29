@@ -2,11 +2,10 @@ namespace Portfolio.Gameplay.Components;
 
 class Player
 {
-    public readonly int Id;
-    public uint Ping;
+    private readonly int _playerId;
 
-    public Player(int id)
+    public Player(int playerId)
     {
-        Id = id;
+        _playerId = playerId;
     }
 }

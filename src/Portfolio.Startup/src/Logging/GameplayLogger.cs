@@ -39,6 +39,6 @@ public class GameplayLogger : Server.ILogger
 
     public void Exception(Exception exception)
     {
-        _logger.LogCritical(exception.Message);
+        _logger.LogCritical($"{exception.Message}\n{exception.StackTrace}");
     }
 }

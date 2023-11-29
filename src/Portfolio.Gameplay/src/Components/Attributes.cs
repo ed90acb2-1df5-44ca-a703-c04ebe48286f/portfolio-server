@@ -1,6 +1,11 @@
 namespace Portfolio.Gameplay.Components;
 
-public class Attributes
+class Attributes
 {
-    public float Speed = 1;
+    public float Speed;
+
+    public Attributes()
+    {
+        Speed = 5;
+    }
 }

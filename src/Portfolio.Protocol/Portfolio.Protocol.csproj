@@ -20,6 +20,7 @@
     </PropertyGroup>
 
     <Target Name="ProtobufCompile" BeforeTargets="BeforeBuild">
+        <Exec Command="rm -f $(ProtoOutput)/*" />
         <Exec Command="protoc --csharp_out=$(ProtoOutput) --proto_path=$(ProtoPath) $(ProtoPath)/*.proto" />
     </Target>
 </Project>

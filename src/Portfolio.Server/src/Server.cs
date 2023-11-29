@@ -1,12 +1,16 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
-using Portfolio.Protocol.Messages;
 using Portfolio.Gameplay;
+using Portfolio.Gameplay.Events;
 using Portfolio.Gameplay.Queries;
+using Portfolio.Protocol.Messages;
 using Portfolio.Protocol.Authentication;
 using Portfolio.Protocol.Requests;
 using Portfolio.Protocol.Values;
 using Portfolio.Server.Controllers;
 using Portfolio.Server.Filters;
+using Portfolio.Server.Mappers;
 using Portfolio.Server.Net;
 using Portfolio.Server.Security;
 
@@ -15,14 +19,15 @@ namespace Portfolio.Server;
 public class Server
 {
     private readonly ILogger _logger;
-    private readonly INetworking _networking;
+    private readonly INetworkKernel _network;
     private readonly Thread _networkingThread;
     private readonly Thread _gameThread;
+    private readonly Dictionary<Type, object> _mappers = new();
 
-    public Server(ILogger logger, Router router, INetworking networking, Authentication authentication)
+    public Server(ILogger logger, Router router, INetworkKernel network, Authentication authentication)
     {
         _logger = logger;
-        _networking = networking;
+        _network = network;
 
         _networkingThread = new Thread(NetworkingLoop);
         _networkingThread.Name = "Networking";
@@ -37,7 +42,15 @@ public class Server
             .Add(router.CreateEndpoint<InputRequest, InputController>())
             .Filter(new AuthenticationConnectionFilter(authentication));
 
-        _networking.SetRouter(router);
+        _network.SetRouter(router);
+
+        RegisterMapper(new EntityDamagedEventMapper());
+        RegisterMapper(new PlayerSpawnedEventMapper());
+    }
+
+    private void RegisterMapper<TEvent, TMessage>(IMapper<TEvent, TMessage> mapper)
+    {
+        _mappers.Add(typeof(TEvent), mapper);
     }
 
     public void Start()
@@ -49,11 +62,13 @@ public class Server
     private void NetworkingLoop()
     {
         _logger.Information("Starting networking...");
-        _networking.Start();
+        _network.Start();
 
         while (true)
         {
-            _networking.Update();
+            _network.Update();
+
+            Thread.Sleep(1000 / 60);
         }
     }
 
@@ -62,41 +77,98 @@ public class Server
         _logger.Information("Starting game...");
         var game = new Game();
 
-        var broadcastThread = new Thread(BroadcastLoop);
-        broadcastThread.Name = "Broadcast";
-        broadcastThread.Start(game);
+        _logger.Information("Starting game event broadcast...");
+        var broadcastGameEventsThread = new Thread(BroadcastGameEventsLoop);
+        broadcastGameEventsThread.Name = "BroadcastGameEvents";
+        broadcastGameEventsThread.Start(game);
+
+        _logger.Information("Starting game state broadcast...");
+        var broadcastGameStateThread = new Thread(BroadcastGameStateLoop);
+        broadcastGameStateThread.Name = "BroadcastGameState";
+        broadcastGameStateThread.Start(game);
 
         while (true)
         {
-            game.Update();
+            try
+            {
+                game.Update();
+            }
+            catch (Exception exception)
+            {
+                _logger.Exception(exception);
+            }
+
+            Thread.Sleep(1000 / 60);
         }
     }
 
-    private void BroadcastLoop(object? context)
+    private void BroadcastGameEventsLoop(object? context)
     {
         var game = (Game) context!;
 
-        var message = new BroadcastMessage();
+        while (true)
+        {
+            try
+            {
+                BroadcastEvents<PlayerSpawnedEvent, PlayerSpawnedMessage>(game);
+                BroadcastEvents<EntityDamagedEvent, EntityDamagedMessage>(game);
+            }
+            catch (Exception exception)
+            {
+                _logger.Exception(exception);
+            }
+
+            Thread.Sleep(1000 / 60);
+        }
+    }
+
+    private void BroadcastEvents<TEvent, TMessage>(Game game)
+    {
+        var events = game.Events<TEvent>();
+
+        while (events.TryDequeue(out var @event))
+        {
+            var message = ((IMapper<TEvent, TMessage>) _mappers[typeof(TEvent)]).Map(@event);
+            _network.Broadcast(message, DeliveryMethod.Reliable);
+        }
+    }
+
+    private void BroadcastGameStateLoop(object? context)
+    {
+        var game = (Game) context!;
+
+        var message = new WorldStateMessage();
 
         while (true)
         {
-            message.Positions.Clear();
-
-            using var result = game.Query<CharacterPositionsQuery, CharacterPositionsQuery.Result>(new CharacterPositionsQuery());
-
-            foreach (var position in result.Positions)
+            try
             {
-                var vector2 = new Vector2();
-                vector2.X = position.X;
-                vector2.Y = position.Y;
-                message.Positions.Add(vector2);
+                using var result = game.Query<WorldStateQuery, WorldStateQuery.Result>(new WorldStateQuery());
+
+                message.Entities.Clear();
+
+                foreach (var entity in result.Entities)
+                {
+                    message.Entities.Add(
+                        new WorldStateMessage.Types.EntityState
+                        {
+                            EntityId = entity.EntityId,
+                            Position = new Vector2
+                            {
+                                X = entity.Position.X,
+                                Y = entity.Position.Y
+                            },
+                        });
+                }
+
+                _network.Broadcast(message, DeliveryMethod.Unreliable);
+            }
+            catch (Exception exception)
+            {
+                _logger.Exception(exception);
             }
 
-            _networking.Broadcast(message, DeliveryMethod.Unreliable);
-
-            Thread.Sleep(1000 / 5);
+            Thread.Sleep(100);
         }
-
-        // ...
     }
 }

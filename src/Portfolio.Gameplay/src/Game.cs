@@ -1,29 +1,62 @@
-using System.Collections.Generic;
+using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Numerics;
 using System.Threading;
 using Portfolio.Entities;
+using Portfolio.Gameplay.Commands;
 using Portfolio.Gameplay.Components;
+using Portfolio.Gameplay.Events;
+using Portfolio.Gameplay.Queries;
 using Portfolio.Gameplay.Systems;
 
 namespace Portfolio.Gameplay;
 
 public class Game
 {
+    public int Tick { get; private set; }
+
     private readonly World _world;
+    private readonly GameEvents _events;
     private readonly ISystem[] _systems;
 
-    private readonly Dictionary<int, Entity> _characters = new();
+    private readonly ConcurrentDictionary<int, Entity> _players = new();
     private readonly Stopwatch _stopwatch = new();
     private readonly ReaderWriterLockSlim _lock = new();
 
     public Game()
     {
         _world = new World();
+        _events = new GameEvents();
 
         _systems = new ISystem[]
         {
-            new TranslationSystem(_world)
+            new TranslationSystem(_world),
         };
+    }
+
+    public void SpawnPlayer(int playerId)
+    {
+        try
+        {
+            _lock.EnterWriteLock();
+
+            var entity = _world.Create();
+            _world.SetComponent(entity, new Player(playerId));
+            _world.SetComponent(entity, new Networked());
+            _world.SetComponent(entity, new Input());
+            _world.SetComponent(entity, new MoveUsingInput());
+            _world.SetComponent(entity, new Position());
+            _world.SetComponent(entity, new Velocity());
+            _world.SetComponent(entity, new Attributes());
+            _players[playerId] = entity;
+
+            _events.Add(new PlayerSpawnedEvent(entity, playerId, new Vector2()));
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
+        }
     }
 
     public void Update()
@@ -39,6 +72,8 @@ public class Game
             {
                 _systems[i].Tick(delta);
             }
+
+            Tick += 1;
         }
         finally
         {
@@ -46,42 +81,17 @@ public class Game
         }
     }
 
-    public void SpawnPlayerCharacter(int peer)
+    public ConcurrentQueue<TEvent> Events<TEvent>()
+    {
+        return _events.Get<TEvent>();
+    }
+
+    public void Command<TCommand>(int playerId, TCommand command) where TCommand : IPlayerCommand
     {
         try
         {
             _lock.EnterWriteLock();
-
-            var entity = _world.Create();
-            _world.SetComponent(entity, new Position());
-            _world.SetComponent(entity, new Velocity());
-            _characters[peer] = entity;
-        }
-        finally
-        {
-            _lock.ExitWriteLock();
-        }
-    }
-
-    public Entity GetPlayerCharacter(int peer)
-    {
-        try
-        {
-            _lock.EnterReadLock();
-            return _characters[peer];
-        }
-        finally
-        {
-            _lock.ExitReadLock();
-        }
-    }
-
-    public void Command<TCommand>(TCommand command) where TCommand : ICommand
-    {
-        try
-        {
-            _lock.EnterWriteLock();
-            command.Execute(_world);
+            command.Execute(_players[playerId], _world);
         }
         finally
         {

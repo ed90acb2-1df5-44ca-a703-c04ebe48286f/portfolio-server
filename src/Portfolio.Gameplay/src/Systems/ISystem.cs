@@ -1,4 +1,4 @@
-namespace Portfolio.Gameplay;
+namespace Portfolio.Gameplay.Systems;
 
 public interface ISystem
 {

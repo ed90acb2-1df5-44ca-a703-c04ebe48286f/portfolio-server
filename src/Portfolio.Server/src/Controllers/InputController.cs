@@ -18,10 +18,9 @@ public class InputController : IController<InputRequest>
 
     public Task Handle(Connection connection, InputRequest request)
     {
-        var inputCommand = new InputCommand(
-            connection.Id, new Vector2(request.Direction.X, request.Direction.Y));
+        var inputCommand = new InputPlayerCommand(new Vector2(request.Direction.X, request.Direction.Y));
 
-        _game.Command(inputCommand);
+        _game.Command(connection.Id, inputCommand);
 
         return Task.CompletedTask;
     }

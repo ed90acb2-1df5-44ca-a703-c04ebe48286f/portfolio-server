@@ -8,12 +8,12 @@ namespace Portfolio.Server.Controllers;
 
 public class RegistrationController : IController<RegistrationRequest>
 {
-    private readonly INetworking _networking;
+    private readonly INetworkKernel _networkKernel;
     private readonly Authentication _authentication;
 
-    public RegistrationController(INetworking networking, Authentication authentication)
+    public RegistrationController(INetworkKernel networkKernel, Authentication authentication)
     {
-        _networking = networking;
+        _networkKernel = networkKernel;
         _authentication = authentication;
     }
 
@@ -21,7 +21,7 @@ public class RegistrationController : IController<RegistrationRequest>
     {
         var isRegistered = await _authentication.Register(request.Login, request.Password);
 
-        _networking.Send(connection, new RegistrationResponse
+        _networkKernel.Send(connection, new RegistrationResponse
         {
             ErrorCode = isRegistered ? ErrorCode.Success : ErrorCode.RegistrationLoginExists
         });

@@ -6,3 +6,14 @@ message Vector2 {
     float X = 1;
     float Y = 2;
 }
+
+message Damage {
+    enum DamageType {
+        True = 0;
+        Physical = 1;
+        Magical = 2;
+    }
+
+    int32 Amount = 1;
+    DamageType Type = 2;
+}

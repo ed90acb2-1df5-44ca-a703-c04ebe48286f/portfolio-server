@@ -4,6 +4,23 @@ import "values.proto";
 
 option csharp_namespace = "Portfolio.Protocol.Messages";
 
-message BroadcastMessage {
-    repeated Vector2 Positions = 1;
+message WorldStateMessage {
+    message EntityState {
+        int32 EntityId = 1;
+        Vector2 Position = 2;
+    }
+
+    repeated EntityState Entities = 2;
+}
+
+message EntityDamagedMessage {
+    Damage Damage = 1;
+    int32 VictimId = 2;
+    int32 AttackerId = 3;
+}
+
+message PlayerSpawnedMessage {
+    int32 EntityId = 1;
+    int32 PlayerId = 2;
+    Vector2 Position = 3;
 }

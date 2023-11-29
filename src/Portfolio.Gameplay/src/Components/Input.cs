@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Portfolio.Gameplay.Components;
 
-public class Input
+class Input
 {
     public Vector2 Direction;
 }

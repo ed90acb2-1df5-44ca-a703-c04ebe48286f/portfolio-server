@@ -1,0 +1,7 @@
+{
+    "name": "com.portfolio.entities",
+    "version": "1.0.0",
+    "displayName": "Portfolio Entities",
+    "description": "Portfolio Entities",
+    "type": "library"
+}
