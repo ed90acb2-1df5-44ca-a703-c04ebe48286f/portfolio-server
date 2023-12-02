@@ -22,7 +22,7 @@ public readonly struct WorldStateQuery : IQuery<WorldStateQuery.Result>
         {
             var entity = entities[i];
             var position = world.GetComponent<Position>(entity).Value;
-            result.Entities[i] = new EntityState(entity.Index, position, 1);
+            result.Set(i, new EntityState(entity.Index, position, 1));
         }
 
         return result;
@@ -30,16 +30,28 @@ public readonly struct WorldStateQuery : IQuery<WorldStateQuery.Result>
 
     public readonly struct Result : IDisposable
     {
-        public readonly EntityState[] Entities;
+        private readonly int _count;
+        private readonly EntityState[] _entities;
 
         public Result(int count)
         {
-            Entities = ArrayPool<EntityState>.Shared.Rent(count);
+            _count = count;
+            _entities = ArrayPool<EntityState>.Shared.Rent(count);
+        }
+
+        internal void Set(int i, EntityState entity)
+        {
+            _entities[i] = entity;
+        }
+
+        public ReadOnlySpan<EntityState> Entities()
+        {
+            return _entities.AsSpan(0, _count);
         }
 
         public void Dispose()
         {
-            ArrayPool<EntityState>.Shared.Return(Entities);
+            ArrayPool<EntityState>.Shared.Return(_entities);
         }
     }
 

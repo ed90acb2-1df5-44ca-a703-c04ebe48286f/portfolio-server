@@ -2,12 +2,12 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Portfolio.Gameplay;
 using Portfolio.Gameplay.Commands;
-using Portfolio.Protocol.Requests;
+using Portfolio.Protocol.Commands;
 using Portfolio.Server.Net;
 
 namespace Portfolio.Server.Controllers;
 
-public class InputController : IController<InputRequest>
+public class InputController : IController<InputCommand>
 {
     private readonly Game _game;
 
@@ -16,9 +16,9 @@ public class InputController : IController<InputRequest>
         _game = game;
     }
 
-    public Task Handle(Connection connection, InputRequest request)
+    public Task Handle(Connection connection, InputCommand command)
     {
-        var inputCommand = new InputPlayerCommand(new Vector2(request.Direction.X, request.Direction.Y));
+        var inputCommand = new InputPlayerCommand(new Vector2(command.Direction.X, command.Direction.Y));
 
         _game.Command(connection.Id, inputCommand);
 

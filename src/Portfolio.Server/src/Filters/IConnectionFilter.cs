@@ -4,5 +4,5 @@ namespace Portfolio.Server.Filters;
 
 public interface IConnectionFilter
 {
-    bool Filter(Connection connection, object request);
+    bool Filter(Connection connection, object command);
 }

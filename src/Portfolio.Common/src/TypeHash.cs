@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Portfolio.Protocol
+namespace Portfolio.Common
 {
-    public static class Opcode
+    public static class TypeHash
     {
         private static readonly Dictionary<ulong, Type> _types = new();
 
@@ -12,7 +12,7 @@ namespace Portfolio.Protocol
             return _types.GetValueOrDefault(opcode);
         }
 
-        public static ulong Get<T>()
+        public static ulong Hash<T>()
         {
             var opcode = HashCache<T>.Value;
 

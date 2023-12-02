@@ -1,0 +1,7 @@
+{
+    "name": "com.portfolio.common",
+    "version": "1.0.0",
+    "displayName": "Portfolio Common",
+    "description": "Portfolio Common",
+    "type": "library"
+}

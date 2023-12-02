@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 
-namespace Portfolio.Protocol
+namespace Portfolio.Common
 {
     public class BufferWriter : IBufferWriter<byte>
     {

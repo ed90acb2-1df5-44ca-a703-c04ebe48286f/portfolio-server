@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Portfolio.Protocol;
+using Portfolio.Common;
 using Portfolio.Server.Controllers;
 
 namespace Portfolio.Server.Net;
@@ -11,27 +11,27 @@ public class Router
     private readonly Dictionary<ulong, Func<Connection, byte[], Task>> _handlers = new();
 
     private readonly ILogger _logger;
-    private readonly IEndpointHandler _endpointHandler;
+    private readonly ICommandHandler _commandHandler;
     private readonly IPacketSerializer _packetSerializer;
 
-    public Router(ILogger logger, IEndpointHandler endpointHandler, IPacketSerializer packetSerializer)
+    public Router(ILogger logger, ICommandHandler commandHandler, IPacketSerializer packetSerializer)
     {
         _logger = logger;
-        _endpointHandler = endpointHandler;
+        _commandHandler = commandHandler;
         _packetSerializer = packetSerializer;
     }
 
-    public Endpoint CreateEndpoint<TRequest, TController>()
-        where TController : IController<TRequest> where TRequest : new()
+    public Endpoint CreateEndpoint<TCommand, TController>()
+        where TController : IController<TCommand> where TCommand : notnull, new()
     {
-        var request = new TRequest();
-        var endpoint = new Endpoint<TRequest, TController>(_logger, _endpointHandler);
+        var command = new TCommand();
+        var endpoint = new Endpoint<TCommand, TController>(_logger, _commandHandler);
 
-        _handlers[Opcode.Get<TRequest>()] = async (connection, packet) =>
+        _handlers[TypeHash.Hash<TCommand>()] = async (connection, packet) =>
         {
             try
             {
-                _packetSerializer.Hydrate(request, packet);
+                _packetSerializer.Hydrate(command, packet);
             }
             catch (Exception exception)
             {
@@ -39,7 +39,7 @@ public class Router
                 return;
             }
 
-            await endpoint.Handle(connection, request);
+            await endpoint.Handle(connection, command);
         };
 
         return endpoint;
@@ -53,6 +53,6 @@ public class Router
             return;
         }
 
-        _logger.Error($"Missing handler for opcode: '{Opcode.Type(opcode)}' '{opcode}'");
+        _logger.Error($"Missing handler for opcode: '{TypeHash.Type(opcode)}' '{opcode}'");
     }
 }

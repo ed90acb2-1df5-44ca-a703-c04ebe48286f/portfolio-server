@@ -2,9 +2,9 @@ namespace Portfolio.Server.Net;
 
 public interface INetwork
 {
-    void Send<TMessage>(Connection connection, TMessage message, DeliveryMethod deliveryMethod = DeliveryMethod.Reliable);
+    void Direct<TMessage>(Connection connection, TMessage message, DeliveryMethod deliveryMethod);
 
-    void Broadcast<TMessage>(TMessage message, DeliveryMethod deliveryMethod);
+    void Fanout<TMessage>(TMessage message, DeliveryMethod deliveryMethod);
 
-    void BroadcastExcept<TMessage>(TMessage message, DeliveryMethod deliveryMethod, Connection connection);
+    void FanoutExcept<TMessage>(TMessage message, DeliveryMethod deliveryMethod, Connection connection);
 }

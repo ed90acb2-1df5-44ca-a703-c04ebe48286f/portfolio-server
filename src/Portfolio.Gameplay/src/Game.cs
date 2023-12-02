@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
@@ -17,7 +16,7 @@ public class Game
     public int Tick { get; private set; }
 
     private readonly World _world;
-    private readonly GameEvents _events;
+    private readonly MessageQueue _messageQueue;
     private readonly ISystem[] _systems;
 
     private readonly ConcurrentDictionary<int, Entity> _players = new();
@@ -27,7 +26,7 @@ public class Game
     public Game()
     {
         _world = new World();
-        _events = new GameEvents();
+        _messageQueue = new MessageQueue();
 
         _systems = new ISystem[]
         {
@@ -51,7 +50,7 @@ public class Game
             _world.SetComponent(entity, new Attributes());
             _players[playerId] = entity;
 
-            _events.Add(new PlayerSpawnedEvent(entity, playerId, new Vector2()));
+            _messageQueue.Fanout(new PlayerSpawnedEvent(entity, playerId, new Vector2()));
         }
         finally
         {
@@ -81,9 +80,9 @@ public class Game
         }
     }
 
-    public ConcurrentQueue<TEvent> Events<TEvent>()
+    public ConcurrentQueue<Message<TEvent>> Messages<TEvent>()
     {
-        return _events.Get<TEvent>();
+        return _messageQueue.Get<TEvent>();
     }
 
     public void Command<TCommand>(int playerId, TCommand command) where TCommand : IPlayerCommand

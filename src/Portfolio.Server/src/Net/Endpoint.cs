@@ -17,24 +17,24 @@ public class Endpoint
     }
 }
 
-public class Endpoint<TRequest, TController> : Endpoint
-    where TController : IController<TRequest>
-    where TRequest : notnull
+public class Endpoint<TCommand, TController> : Endpoint
+    where TController : IController<TCommand>
+    where TCommand : notnull
 {
     private readonly ILogger _logger;
-    private readonly IEndpointHandler _endpointHandler;
+    private readonly ICommandHandler _commandHandler;
 
-    public Endpoint(ILogger logger, IEndpointHandler endpointHandler)
+    public Endpoint(ILogger logger, ICommandHandler commandHandler)
     {
         _logger = logger;
-        _endpointHandler = endpointHandler;
+        _commandHandler = commandHandler;
     }
 
-    public async Task Handle(Connection connection, TRequest request)
+    public async Task Handle(Connection connection, TCommand command)
     {
         for (var i = 0; i < Filters.Count; i++)
         {
-            if (!Filters[i].Filter(connection, request))
+            if (!Filters[i].Filter(connection, command))
             {
                 _logger.Warning($"Filter not passed: '{Filters[i].GetType().Name}'");
                 return;
@@ -43,7 +43,7 @@ public class Endpoint<TRequest, TController> : Endpoint
 
         try
         {
-            await _endpointHandler.Handle<TRequest, TController>(connection, request);
+            await _commandHandler.Handle<TCommand, TController>(connection, command);
         }
         catch (Exception exception)
         {

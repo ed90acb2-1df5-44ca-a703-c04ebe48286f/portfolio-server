@@ -3,8 +3,8 @@ using Portfolio.Server.Net;
 
 namespace Portfolio.Server.Controllers
 {
-    public interface IController<in TRequest>
+    public interface IController<in TCommand>
     {
-        Task Handle(Connection connection, TRequest request);
+        Task Handle(Connection connection, TCommand command);
     }
 }

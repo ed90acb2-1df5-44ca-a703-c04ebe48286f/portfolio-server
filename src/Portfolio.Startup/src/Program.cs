@@ -32,7 +32,7 @@ public static class Program
             .AddSingleton<INetworkKernel>(services => services.GetRequiredService<LiteNetLibNetworkKernel>())
             .AddSingleton<INetwork>(services => services.GetRequiredService<LiteNetLibNetworkKernel>())
             .AddSingleton<IPasswordHasher, BcryptPasswordHasher>()
-            .AddSingleton<IEndpointHandler, EndpointHandler>()
+            .AddSingleton<ICommandHandler, CommandHandler>()
             .AddSingleton<IPacketSerializer, PacketSerializer>()
             .AddSingleton<ISessionStorage, InMemorySessionStorage>()
             .AddSingleton<ILogger>(services => new GameplayLogger(services.GetRequiredService<ILoggerFactory>().CreateLogger("Server")))

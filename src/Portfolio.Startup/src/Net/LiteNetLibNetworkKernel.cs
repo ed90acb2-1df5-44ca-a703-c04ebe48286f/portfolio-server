@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -7,8 +6,8 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Portfolio.Common;
 using Portfolio.Server.Net;
-using Portfolio.Protocol;
 using Portfolio.Startup.Settings;
 using DeliveryMethod = Portfolio.Server.Net.DeliveryMethod;
 
@@ -42,11 +41,8 @@ namespace Portfolio.Startup.Net
 
         public void Start()
         {
-            _logger.LogInformation("Starting server...");
-
             _manager.Start(_options.Value.Port);
-
-            _logger.LogInformation($"Server started at port: {_manager.LocalPort}");
+            _logger.LogInformation($"Listening port: {_manager.LocalPort}");
         }
 
         public void Update()
@@ -59,7 +55,7 @@ namespace Portfolio.Startup.Net
             _manager.Stop();
         }
 
-        public void Send<TPacket>(Connection connection, TPacket message, DeliveryMethod deliveryMethod)
+        public void Direct<TPacket>(Connection connection, TPacket message, DeliveryMethod deliveryMethod)
         {
             lock (_buffer)
             {
@@ -68,7 +64,7 @@ namespace Portfolio.Startup.Net
             }
         }
 
-        public void Broadcast<TPacket>(TPacket message, DeliveryMethod deliveryMethod)
+        public void Fanout<TPacket>(TPacket message, DeliveryMethod deliveryMethod)
         {
             lock (_buffer)
             {
@@ -77,7 +73,7 @@ namespace Portfolio.Startup.Net
             }
         }
 
-        public void BroadcastExcept<TPacket>(TPacket message, DeliveryMethod deliveryMethod, Connection connection)
+        public void FanoutExcept<TPacket>(TPacket message, DeliveryMethod deliveryMethod, Connection connection)
         {
             lock (_buffer)
             {
@@ -158,7 +154,7 @@ namespace Portfolio.Startup.Net
         private static void Serialize<T>(T packet, BufferWriter buffer)
         {
             buffer.Reset();
-            buffer.Write(Opcode.Get<T>());
+            buffer.Write(TypeHash.Hash<T>());
 
             ((IMessage) packet!).WriteTo(buffer);
         }

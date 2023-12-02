@@ -25,18 +25,18 @@ namespace Portfolio.Protocol.Authentication {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChRhdXRoZW50aWNhdGlvbi5wcm90bxoMZXJyb3JzLnByb3RvIi8KDExvZ2lu",
-            "UmVxdWVzdBINCgVMb2dpbhgBIAEoCRIQCghQYXNzd29yZBgCIAEoCSI9Cg1M",
+            "Q29tbWFuZBINCgVMb2dpbhgBIAEoCRIQCghQYXNzd29yZBgCIAEoCSI9Cg1M",
             "b2dpblJlc3BvbnNlEg0KBVRva2VuGAEgASgJEh0KCUVycm9yQ29kZRgCIAEo",
-            "DjIKLkVycm9yQ29kZSI2ChNSZWdpc3RyYXRpb25SZXF1ZXN0Eg0KBUxvZ2lu",
+            "DjIKLkVycm9yQ29kZSI2ChNSZWdpc3RyYXRpb25Db21tYW5kEg0KBUxvZ2lu",
             "GAEgASgJEhAKCFBhc3N3b3JkGAIgASgJIjUKFFJlZ2lzdHJhdGlvblJlc3Bv",
             "bnNlEh0KCUVycm9yQ29kZRgBIAEoDjIKLkVycm9yQ29kZUIkqgIhUG9ydGZv",
             "bGlvLlByb3RvY29sLkF1dGhlbnRpY2F0aW9uYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Portfolio.Protocol.Errors.ErrorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.LoginRequest), global::Portfolio.Protocol.Authentication.LoginRequest.Parser, new[]{ "Login", "Password" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.LoginCommand), global::Portfolio.Protocol.Authentication.LoginCommand.Parser, new[]{ "Login", "Password" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.LoginResponse), global::Portfolio.Protocol.Authentication.LoginResponse.Parser, new[]{ "Token", "ErrorCode" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.RegistrationRequest), global::Portfolio.Protocol.Authentication.RegistrationRequest.Parser, new[]{ "Login", "Password" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.RegistrationCommand), global::Portfolio.Protocol.Authentication.RegistrationCommand.Parser, new[]{ "Login", "Password" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Portfolio.Protocol.Authentication.RegistrationResponse), global::Portfolio.Protocol.Authentication.RegistrationResponse.Parser, new[]{ "ErrorCode" }, null, null, null, null)
           }));
     }
@@ -44,16 +44,16 @@ namespace Portfolio.Protocol.Authentication {
 
   }
   #region Messages
-  public sealed partial class LoginRequest : pb::IMessage<LoginRequest>
+  public sealed partial class LoginCommand : pb::IMessage<LoginCommand>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<LoginRequest> _parser = new pb::MessageParser<LoginRequest>(() => new LoginRequest());
+    private static readonly pb::MessageParser<LoginCommand> _parser = new pb::MessageParser<LoginCommand>(() => new LoginCommand());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<LoginRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<LoginCommand> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -69,7 +69,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public LoginRequest() {
+    public LoginCommand() {
       OnConstruction();
     }
 
@@ -77,7 +77,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public LoginRequest(LoginRequest other) : this() {
+    public LoginCommand(LoginCommand other) : this() {
       login_ = other.login_;
       password_ = other.password_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -85,8 +85,8 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public LoginRequest Clone() {
-      return new LoginRequest(this);
+    public LoginCommand Clone() {
+      return new LoginCommand(this);
     }
 
     /// <summary>Field number for the "Login" field.</summary>
@@ -116,12 +116,12 @@ namespace Portfolio.Protocol.Authentication {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as LoginRequest);
+      return Equals(other as LoginCommand);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(LoginRequest other) {
+    public bool Equals(LoginCommand other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -207,7 +207,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(LoginRequest other) {
+    public void MergeFrom(LoginCommand other) {
       if (other == null) {
         return;
       }
@@ -496,16 +496,16 @@ namespace Portfolio.Protocol.Authentication {
 
   }
 
-  public sealed partial class RegistrationRequest : pb::IMessage<RegistrationRequest>
+  public sealed partial class RegistrationCommand : pb::IMessage<RegistrationCommand>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<RegistrationRequest> _parser = new pb::MessageParser<RegistrationRequest>(() => new RegistrationRequest());
+    private static readonly pb::MessageParser<RegistrationCommand> _parser = new pb::MessageParser<RegistrationCommand>(() => new RegistrationCommand());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<RegistrationRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<RegistrationCommand> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -521,7 +521,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RegistrationRequest() {
+    public RegistrationCommand() {
       OnConstruction();
     }
 
@@ -529,7 +529,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RegistrationRequest(RegistrationRequest other) : this() {
+    public RegistrationCommand(RegistrationCommand other) : this() {
       login_ = other.login_;
       password_ = other.password_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -537,8 +537,8 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public RegistrationRequest Clone() {
-      return new RegistrationRequest(this);
+    public RegistrationCommand Clone() {
+      return new RegistrationCommand(this);
     }
 
     /// <summary>Field number for the "Login" field.</summary>
@@ -568,12 +568,12 @@ namespace Portfolio.Protocol.Authentication {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as RegistrationRequest);
+      return Equals(other as RegistrationCommand);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(RegistrationRequest other) {
+    public bool Equals(RegistrationCommand other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -659,7 +659,7 @@ namespace Portfolio.Protocol.Authentication {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(RegistrationRequest other) {
+    public void MergeFrom(RegistrationCommand other) {
       if (other == null) {
         return;
       }

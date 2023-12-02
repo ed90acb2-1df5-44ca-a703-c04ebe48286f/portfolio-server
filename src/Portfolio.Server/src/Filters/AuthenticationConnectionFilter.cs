@@ -12,7 +12,7 @@ public class AuthenticationConnectionFilter : IConnectionFilter
         _authentication = authentication;
     }
 
-    public bool Filter(Connection connection, object request)
+    public bool Filter(Connection connection, object command)
     {
         return _authentication.IsAuthenticated(connection);
     }

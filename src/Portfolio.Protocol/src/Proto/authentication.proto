@@ -4,7 +4,7 @@ import "errors.proto";
 
 option csharp_namespace = "Portfolio.Protocol.Authentication";
 
-message LoginRequest {
+message LoginCommand {
     string Login = 1;
     string Password = 2;
 }
@@ -14,7 +14,7 @@ message LoginResponse {
     ErrorCode ErrorCode = 2;
 }
 
-message RegistrationRequest {
+message RegistrationCommand {
     string Login = 1;
     string Password = 2;
 }

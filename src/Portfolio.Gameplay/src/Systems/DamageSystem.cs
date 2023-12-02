@@ -1,16 +1,15 @@
 using Portfolio.Entities;
 using Portfolio.Gameplay.Components;
-using Portfolio.Gameplay.Events;
 
 namespace Portfolio.Gameplay.Systems;
 
 public class DamageSystem : ISystem
 {
     private readonly World _world;
-    private readonly GameEvents _events;
+    private readonly MessageQueue _events;
     private readonly Query _query;
 
-    public DamageSystem(World world, GameEvents events)
+    public DamageSystem(World world, MessageQueue events)
     {
         _world = world;
         _events = events;

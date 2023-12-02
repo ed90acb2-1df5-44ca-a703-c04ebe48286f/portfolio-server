@@ -6,24 +6,22 @@ using Portfolio.Server.Security;
 
 namespace Portfolio.Server.Controllers;
 
-public class RegistrationController : IController<RegistrationRequest>
+public class RegistrationController : IController<RegistrationCommand>
 {
-    private readonly INetworkKernel _networkKernel;
+    private readonly INetwork _network;
     private readonly Authentication _authentication;
 
-    public RegistrationController(INetworkKernel networkKernel, Authentication authentication)
+    public RegistrationController(INetwork network, Authentication authentication)
     {
-        _networkKernel = networkKernel;
+        _network = network;
         _authentication = authentication;
     }
 
-    public async Task Handle(Connection connection, RegistrationRequest request)
+    public async Task Handle(Connection connection, RegistrationCommand command)
     {
-        var isRegistered = await _authentication.Register(request.Login, request.Password);
+        var isRegistered = await _authentication.Register(command.Login, command.Password);
+        var errorCode = isRegistered ? ErrorCode.Success : ErrorCode.RegistrationLoginExists;
 
-        _networkKernel.Send(connection, new RegistrationResponse
-        {
-            ErrorCode = isRegistered ? ErrorCode.Success : ErrorCode.RegistrationLoginExists
-        });
+        _network.Direct(connection, new RegistrationResponse { ErrorCode = errorCode }, DeliveryMethod.Reliable);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Portfolio.Gameplay;
 using Portfolio.Protocol.Authentication;
@@ -8,14 +7,14 @@ using Portfolio.Server.Security;
 
 namespace Portfolio.Server.Controllers;
 
-public class LoginController : IController<LoginRequest>
+public class LoginController : IController<LoginCommand>
 {
     private readonly Game _game;
     private readonly ILogger _logger;
     private readonly Authentication _authentication;
-    private readonly INetworkKernel _network;
+    private readonly INetwork _network;
 
-    public LoginController(Game game, ILogger logger, Authentication authentication, INetworkKernel network)
+    public LoginController(Game game, ILogger logger, Authentication authentication, INetwork network)
     {
         _game = game;
         _logger = logger;
@@ -23,19 +22,17 @@ public class LoginController : IController<LoginRequest>
         _network = network;
     }
 
-    public async Task Handle(Connection connection, LoginRequest request)
+    public async Task Handle(Connection connection, LoginCommand command)
     {
-        _logger.Debug($"{GetType().Name}: {Environment.CurrentManagedThreadId.ToString()}");
-
-        var isAuthenticated = await _authentication.Authenticate(connection, request.Login, request.Password);
+        var isAuthenticated = await _authentication.Authenticate(connection, command.Login, command.Password);
 
         if (!isAuthenticated)
         {
-            _network.Send(connection, new LoginResponse { ErrorCode = ErrorCode.AuthenticationInvalidCredentials });
+            _network.Direct(connection, new LoginResponse { ErrorCode = ErrorCode.AuthenticationInvalidCredentials }, DeliveryMethod.Reliable);
             return;
         }
 
-        _network.Send(connection, new LoginResponse { ErrorCode = ErrorCode.Success });
+        _network.Direct(connection, new LoginResponse { ErrorCode = ErrorCode.Success }, DeliveryMethod.Reliable);
 
         _game.SpawnPlayer(connection.Id);
     }

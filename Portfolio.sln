@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Entities", "src\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Server", "src\Portfolio.Server\Portfolio.Server.csproj", "{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Common", "src\Portfolio.Common\Portfolio.Common.csproj", "{DAD4059A-71E0-4A25-943E-F76291278502}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE2F131-A2E3-4EBA-A159-0EBDE2199D93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAD4059A-71E0-4A25-943E-F76291278502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAD4059A-71E0-4A25-943E-F76291278502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAD4059A-71E0-4A25-943E-F76291278502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAD4059A-71E0-4A25-943E-F76291278502}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
